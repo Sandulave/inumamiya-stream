@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { config } from "@/content/config";
+import { ReadonlyURLSearchParams } from "next/navigation";
 
 type CTA = { label: string; href: string };
 
@@ -174,29 +175,79 @@ function Highlights() {
   );
 }
 
+type ClipItem = { title: string; href: string; thumbnail?: string };
+
 function Clips() {
+  const clips = config.clips as ClipItem[];
+  const [thumbs, setThumbs] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    let canceled = false;
+
+    (async () => {
+      const results = await Promise.all(
+        clips.map(async (c) => {
+          // configにthumbnailが入ってるならそれ優先
+          if (c.thumbnail) return [c.href, c.thumbnail] as const;
+
+          try {
+            const r = await fetch(`/api/clip-thumb?url=${encodeURIComponent(c.href)}`);
+            const j = await r.json();
+            if (j.thumbnail) return [c.href, j.thumbnail] as const;
+          } catch {}
+          return [c.href, "/ogp.png"] as const; // 最後の保険
+        })
+      );
+
+      if (!canceled) {
+        setThumbs(Object.fromEntries(results));
+      }
+    })();
+
+    return () => {
+      canceled = true;
+    };
+  }, [clips]);
+
   return (
-    <div className="grid gap-3 sm:grid-cols-3">
-      {config.clips.map((c) => (
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {clips.map((c) => (
         <a
           key={c.href + c.title}
           href={c.href}
           target="_blank"
           rel="noreferrer"
-          className="group rounded-xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10"
+          className="group overflow-hidden rounded-xl border border-white/10 bg-white/5 transition hover:bg-white/10"
         >
-          <div className="text-sm font-semibold text-white/90">{c.title}</div>
-          <div className="mt-2 text-xs text-white/60">
-            {c.href.replace("https://", "")}
+          <div className="relative">
+            <img
+              src={thumbs[c.href] ?? "/ogp.png"}
+              alt={c.title}
+              className="h-auto w-full aspect-video object-cover"
+              loading="lazy"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-70" />
+            <div className="pointer-events-none absolute bottom-2 left-2 inline-flex items-center rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-xs text-white/90 backdrop-blur">
+              ▶ Clip
+            </div>
           </div>
-          <div className="mt-3 inline-flex items-center text-xs text-white/70">
-            Open <span className="ml-2 opacity-60 transition group-hover:opacity-100">↗</span>
+
+          <div className="p-4">
+            <div className="text-sm font-semibold text-white/90">{c.title}</div>
+            <div className="mt-2 text-xs text-white/60">
+              {c.href.replace("https://", "")}
+            </div>
+            <div className="mt-3 inline-flex items-center text-xs text-white/70">
+              Open <span className="ml-2 opacity-60 transition group-hover:opacity-100">↗</span>
+            </div>
           </div>
         </a>
       ))}
     </div>
   );
 }
+
+
 
 function StyleCards() {
   return (
