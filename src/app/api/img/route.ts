@@ -17,12 +17,19 @@ export async function GET(req: Request) {
   // SSRF対策：許可するホストを絞る（必要なら増やす）
   const allowedHosts = new Set([
     "static-cdn.jtvnw.net",
+    "clips-media-assets2.twitch.tv",
+    "clips-media-assets.twitch.tv",
     "clips.twitch.tv",
     "www.twitch.tv",
+    "twitch.tv",
   ]);
 
   if (!allowedHosts.has(target.hostname)) {
-    return NextResponse.json({ error: "host not allowed" }, { status: 403 });
+    console.warn(`[img] Host not allowed: ${target.hostname}`);
+    return NextResponse.json(
+      { error: "host not allowed", hostname: target.hostname },
+      { status: 403 }
+    );
   }
 
   try {
@@ -39,6 +46,7 @@ export async function GET(req: Request) {
 
     if (!upstream.ok) {
       const text = await upstream.text().catch(() => "");
+      console.warn(`[img] Upstream error: ${upstream.status} for ${target.toString()}`);
       return NextResponse.json(
         { error: `upstream ${upstream.status}`, detail: text.slice(0, 200) },
         { status: 502 }
@@ -56,6 +64,7 @@ export async function GET(req: Request) {
     });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
+    console.error(`[img] Fetch failed for ${url}:`, message);
     return NextResponse.json(
       { error: "fetch failed", detail: message },
       { status: 500 }

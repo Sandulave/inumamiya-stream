@@ -38,10 +38,7 @@ export default function Page() {
 
             {config.sections.clips.enabled && (
               <Section title={config.sections.clips.title}>
-                <LatestArchive />
-                <div className="mt-5">
-                  <Clips />
-                </div>
+                <Clips />
               </Section>
             )}
 

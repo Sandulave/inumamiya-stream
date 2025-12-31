@@ -1,39 +1,56 @@
 // src/components/Clips.tsx
 import { useEffect, useState } from "react";
-import { config } from "@/content/config";
-import type { ClipItem } from "@/types";
+import type { ClipItem, Clip } from "@/types";
 
 export function Clips() {
-  const clips = config.clips as readonly ClipItem[];
+  const [clips, setClips] = useState<ClipItem[]>([]);
   const [thumbs, setThumbs] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
-
+  
   useEffect(() => {
     let canceled = false;
 
-    const fetchThumbnails = async () => {
+    const fetchClips = async () => {
       try {
+        // top-clips APIからクリップを取得（再生回数順に3つ）
+        const res = await fetch("/api/top-clips?count=3");
+        
+        if (!res.ok) {
+          console.error(`[Clips] Failed to fetch clips: ${res.status}`);
+          if (!canceled) {
+            setLoading(false);
+          }
+          return;
+        }
+
+        const data = await res.json();
+        const apiClips: Clip[] = data.clips || [];
+
+        // Clip型をClipItem型に変換
+        const clipItems: ClipItem[] = apiClips.map((clip) => ({
+          title: clip.title,
+          href: clip.url,
+          thumbnail: clip.thumbnail,
+        }));
+
+        if (!canceled) {
+          setClips(clipItems);
+        }
+
+        // サムネイルの処理
         const results = await Promise.all(
-          clips.map(async (c) => {
-            if (c.thumbnail) return [c.href, c.thumbnail] as const;
-
-            const api = `/api/clip-thumb?url=${encodeURIComponent(c.href)}`;
-
-            try {
-              const r = await fetch(api);
-              if (!r.ok) {
-                return [c.href, "/ogp.png"] as const;
+          clipItems.map(async (c) => {
+            // サムネイルが既にAPIから取得できている場合はそれを使用
+            if (c.thumbnail) {
+              // 外部URLの場合はプロキシ経由で取得
+              if (c.thumbnail.startsWith("http")) {
+                const proxied = `/api/img?url=${encodeURIComponent(c.thumbnail)}`;
+                return [c.href, proxied] as const;
               }
-
-              const j = await r.json();
-
-              if (typeof j?.thumbnail === "string" && j.thumbnail.length > 0) {
-                return [c.href, j.thumbnail] as const;
-              }
-            } catch {
-              // エラー時はフォールバック画像を使用
+              return [c.href, c.thumbnail] as const;
             }
 
+            // サムネイルがない場合はフォールバック画像
             return [c.href, "/ogp.png"] as const;
           })
         );
@@ -43,26 +60,27 @@ export function Clips() {
           setThumbs(map);
           setLoading(false);
         }
-      } catch {
+      } catch (error) {
+        console.error("[Clips] Error fetching clips:", error);
         if (!canceled) {
           setLoading(false);
         }
       }
     };
 
-    fetchThumbnails();
+    fetchClips();
 
     return () => {
       canceled = true;
     };
-  }, [clips]);
+  }, []);
 
-  if (loading && clips.length > 0 && Object.keys(thumbs).length === 0) {
+  if (loading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {clips.map((c) => (
+        {Array.from({ length: 3 }).map((_, i) => (
           <div
-            key={c.href}
+            key={i}
             className="overflow-hidden rounded-xl border border-white/10 bg-white/5 animate-pulse"
           >
             <div className="aspect-video bg-white/10" />
@@ -94,7 +112,14 @@ export function Clips() {
               className="h-auto w-full aspect-video object-cover"
               loading="lazy"
               onError={(e) => {
-                (e.currentTarget as HTMLImageElement).src = "/ogp.png";
+                const img = e.currentTarget as HTMLImageElement;
+                console.error(`[Clips] Image load error for ${c.href}:`, img.src);
+                if (img.src !== "/ogp.png") {
+                  img.src = "/ogp.png";
+                }
+              }}
+              onLoad={() => {
+                console.log(`[Clips] Image loaded successfully for ${c.href}:`, thumbs[c.href] ?? c.thumbnail);
               }}
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-70" />

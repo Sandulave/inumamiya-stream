@@ -42,29 +42,29 @@ export const config = {
   },
 
   // 文章は後で差し替えOK（今は仮で置いてます）
-  highlights: [
-    { title: "時事・ネットの話題", body: "トレンドを拾って、分かりやすく雑談へ落とし込みます。" },
-    { title: "コメントの温度感", body: "チャットの流れに合わせて、場の空気が自然に育ちます。" },
-    { title: "緩急のある配信", body: "雑談中心、時々ゲームや同時視聴などでリズムを作ります。" },
-  ],
+  // highlights: [
+  //   { title: "時事・ネットの話題", body: "トレンドを拾って、分かりやすく雑談へ落とし込みます。" },
+  //   { title: "コメントの温度感", body: "チャットの流れに合わせて、場の空気が自然に育ちます。" },
+  //   { title: "緩急のある配信", body: "雑談中心、時々ゲームや同時視聴などでリズムを作ります。" },
+  // ],
 
-clips: [
-  {
-    title: "クリップ1（後で差し替え）",
-    href: "https://www.twitch.tv/inumamiya/clip/IntelligentSolidFishBuddhaBar-RxjIfnJqJJWLs00w",
-    thumbnail: "https://clips-media-assets2.twitch.tv/IntelligentSolidFishBuddhaBar-RxjIfnJqJJWLs00w-preview-480x272.jpg",
-  },
-  {
-    title: "クリップ2（後で差し替え）",
-    href: "https://www.twitch.tv/inumamiya/clip/DirtyBoldBasenjiPJSalt-kRRBaf76JyjaM6tN",
-    thumbnail: "https://clips-media-assets2.twitch.tv/DirtyBoldBasenjiPJSalt-kRRBaf76JyjaM6tN-preview-480x272.jpg",
-  },
-  {
-    title: "クリップ3（後で差し替え）",
-    href: "https://www.twitch.tv/inumamiya/clip/CoweringMistyLionLeeroyJenkins-_BD57Lrdkex02cop",
-    thumbnail: "https://clips-media-assets2.twitch.tv/CoweringMistyLionLeeroyJenkins-_BD57Lrdkex02cop-preview-480x272.jpg",
-  },
-],
+// clips: [
+//   {
+//     title: "クリップ1（後で差し替え）",
+//     href: "https://www.twitch.tv/inumamiya/clip/IntelligentSolidFishBuddhaBar-RxjIfnJqJJWLs00w",
+//     thumbnail: "https://clips-media-assets2.twitch.tv/IntelligentSolidFishBuddhaBar-RxjIfnJqJJWLs00w-preview-480x272.jpg",
+//   },
+//   {
+//     title: "クリップ2（後で差し替え）",
+//     href: "https://www.twitch.tv/inumamiya/clip/DirtyBoldBasenjiPJSalt-kRRBaf76JyjaM6tN",
+//     thumbnail: "https://clips-media-assets2.twitch.tv/DirtyBoldBasenjiPJSalt-kRRBaf76JyjaM6tN-preview-480x272.jpg",
+//   },
+//   {
+//     title: "クリップ3（後で差し替え）",
+//     href: "https://www.twitch.tv/inumamiya/clip/CoweringMistyLionLeeroyJenkins-_BD57Lrdkex02cop",
+//     thumbnail: "https://clips-media-assets2.twitch.tv/CoweringMistyLionLeeroyJenkins-_BD57Lrdkex02cop-preview-480x272.jpg",
+//   },
+// ],
 
 
   styleCards: [
