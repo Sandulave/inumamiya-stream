@@ -1,42 +1,96 @@
+// src/app/api/clip-thumb/route.ts
 import { NextResponse } from "next/server";
+import type { TwitchOEmbedResponse } from "@/types";
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const clipUrl = searchParams.get("url");
-
-  if (!clipUrl) {
-    return NextResponse.json(
-      { error: "url parameter is required" },
-      { status: 400 }
-    );
-  }
+function canonicalClipUrl(input: string): string {
+  // 受け取るのは例えば
+  // https://www.twitch.tv/inumamiya/clip/IntelligentSolidFish...
+  // https://clips.twitch.tv/IntelligentSolidFish...
+  // のどっちでも来る想定
 
   try {
-    const res = await fetch(clipUrl, {
-      headers: {
-        "User-Agent": "Mozilla/5.0",
-      },
-    });
+    const u = new URL(input);
 
-    const html = await res.text();
+    // clips.twitch.tv/<slug>
+    const m1 = u.pathname.match(/^\/([^/]+)$/);
+    if (u.hostname === "clips.twitch.tv" && m1?.[1]) {
+      return `https://clips.twitch.tv/${m1[1]}`;
+    }
 
-    const match = html.match(
-      /<meta property="og:image" content="([^"]+)"/
-    );
+    // www.twitch.tv/<channel>/clip/<slug>
+    const m2 = u.pathname.match(/^\/[^/]+\/clip\/([^/]+)$/);
+    if (
+      (u.hostname === "www.twitch.tv" || u.hostname === "twitch.tv") &&
+      m2?.[1]
+    ) {
+      return `https://clips.twitch.tv/${m2[1]}`;
+    }
 
-    if (!match) {
+    // それ以外はそのまま
+    return input;
+  } catch {
+    return input;
+  }
+}
+
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const url = searchParams.get("url");
+
+    if (!url) {
       return NextResponse.json(
-        { error: "thumbnail not found" },
-        { status: 404 }
+        { error: "missing url", thumbnail: "/ogp.png" },
+        { status: 400 }
       );
     }
 
-    return NextResponse.json({
-      thumbnail: match[1],
-    });
-  } catch (e) {
+    const clipUrl = canonicalClipUrl(url);
+
+    // oEmbed（認証不要）
+    const oembed = `https://clips.twitch.tv/oembed?url=${encodeURIComponent(clipUrl)}`;
+
+    try {
+      const r = await fetch(oembed, {
+        headers: {
+          "User-Agent": "Mozilla/5.0",
+          Accept: "application/json",
+        },
+        cache: "no-store",
+      });
+
+      if (!r.ok) {
+        // 例: clip削除やclip_missingなど
+        return NextResponse.json({
+          thumbnail: "/ogp.png",
+          reason: `oembed ${r.status}`,
+        });
+      }
+
+      const j = (await r.json()) as TwitchOEmbedResponse;
+
+      // oEmbedのthumbnail_urlを「自前のimgプロキシ」に通す
+      if (j.thumbnail_url && typeof j.thumbnail_url === "string") {
+        const proxied = `/api/img?url=${encodeURIComponent(j.thumbnail_url)}`;
+        return NextResponse.json({ thumbnail: proxied });
+      }
+
+      return NextResponse.json({
+        thumbnail: "/ogp.png",
+        reason: "no thumbnail_url",
+      });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "unknown";
+      return NextResponse.json({
+        thumbnail: "/ogp.png",
+        reason: message,
+      });
+    }
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to process clip URL";
     return NextResponse.json(
-      { error: "failed to fetch clip" },
+      { error: message, thumbnail: "/ogp.png" },
       { status: 500 }
     );
   }
