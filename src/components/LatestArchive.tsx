@@ -151,27 +151,33 @@ export function LatestArchive({ visible = true }: LatestArchiveProps) {
           animate={isVisible ? "visible" : "hidden"}
           variants={cardVariants}
           custom={index}
-          className="group rounded-xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10"
+          className="group overflow-hidden rounded-xl border border-white/10 bg-white/5 transition hover:bg-white/10"
         >
           <a href={video.url} target="_blank" rel="noreferrer" className="block">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={thumbs[video.url] ?? video.thumbnail ?? "/ogp.png"}
-              alt={video.title}
-              className="w-full aspect-video object-cover rounded-lg mb-3"
-              loading="lazy"
-              onError={(e) => {
-                const img = e.currentTarget as HTMLImageElement;
-                if (img.src !== "/ogp.png") img.src = "/ogp.png";
-              }}
-            />
-            <h3 className="text-md font-bold text-white/90 mb-2 group-hover:text-white transition">
-              {video.title}
-            </h3>
-            <p className="text-xs text-white/60">
-              {new Date(video.createdAt).toLocaleDateString()} ·{" "}
-              {video.viewCount.toLocaleString()} views
-            </p>
+            <div className="relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={thumbs[video.url] ?? video.thumbnail ?? "/ogp.png"}
+                alt={video.title}
+                className="h-auto w-full aspect-video object-cover"
+                loading="lazy"
+                onError={(e) => {
+                  const img = e.currentTarget as HTMLImageElement;
+                  if (img.src !== "/ogp.png") img.src = "/ogp.png";
+                }}
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-70" />
+              <div className="pointer-events-none absolute bottom-2 left-2 inline-flex items-center rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-xs text-white/90 backdrop-blur">
+                ▶ Archive
+              </div>
+            </div>
+            <div className="p-4">
+              <div className="text-sm font-semibold text-white/90">{video.title}</div>
+              <div className="mt-2 text-xs text-white/60">
+                {new Date(video.createdAt).toLocaleDateString()} ·{" "}
+                {video.viewCount.toLocaleString()} views
+              </div>
+            </div>
           </a>
         </motion.div>
       ))}
