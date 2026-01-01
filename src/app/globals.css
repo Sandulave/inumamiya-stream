@@ -63,3 +63,28 @@ body {
   animation: ticker-scroll var(--ticker-duration, 22s) linear infinite;
   will-change: transform;
 }
+
+/* canvas-confettiのcanvas要素を白い背景の上に表示 */
+canvas[style*="position: fixed"] {
+  z-index: 10002 !important;
+}
+
+/* LIVE バッジの点滅アニメーション */
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* LIVE バッジのパルスアニメーション強化 */
+@keyframes live-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+}

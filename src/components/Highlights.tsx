@@ -41,7 +41,7 @@ export function Highlights() {
               }
             } else {
               thumbnailMap[video.url] = "/ogp.png";
-            }
+          }
           });
           setThumbs(thumbnailMap);
           setLoading(false);

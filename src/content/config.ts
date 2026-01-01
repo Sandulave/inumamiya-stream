@@ -14,13 +14,22 @@ export const config = {
   },
 
   hero: {
-    liveTag: "LIVE",
+    liveTag: "ON AIR",
     breakingTag: "BREAKING NEWS",
     name: "いぬまみや",
     subtitle: "ネットの話題を、落ち着いた雑談の温度で。",
+    logoUrl: "/logo.png", // QRコード中央に表示するロゴ画像のパス（publicフォルダ内のパス）
     ctas: [
       { label: "Twitch", href: "https://www.twitch.tv/inumamiya" },
-      // { label: "X", href: "https://x.com/xxxxx" },
+      { label: "X", href: "https://x.com/inu_no_gohan" },
+      { label: "WISH LIST", href: "https://www.amazon.co.jp/hz/wishlist/ls/2ZT0QCKYJFK2B?ref_=wl_share" },
+      { label: "うｐろだ", href: "https://ux.getuploader.com/NewInumamiya/" },
+    ],
+    qrCodes: [
+      { label: "Discord", href: "https://discord.gg/7mqgDxey", qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent("https://discord.gg/7mqgDxey")}`, logoUrl: "/logo_Discord.png" },
+      { label: "YouTube", href: "https://www.youtube.com/channel/UC3K67dwtrnZFI_dVn5LYWGA", qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent("https://www.youtube.com/channel/UC3K67dwtrnZFI_dVn5LYWGA")}`, logoUrl: "/logo_inu_youtube.png" },
+      { label: "どもども動画部", href: "https://www.youtube.com/channel/UCeaXl91nkdPp6isMzI548vg", qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent("https://www.youtube.com/channel/UCeaXl91nkdPp6isMzI548vg")}`, logoUrl: "/logo_domodomo_douga.png" },
+      { label: "LINE OPENCHAT", href: "https://line.me/ti/g2/nbHvs4pt-v_8nhwuRxD_o0CEAM1L1HiFBfpzqA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default", qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent("https://line.me/ti/g2/nbHvs4pt-v_8nhwuRxD_o0CEAM1L1HiFBfpzqA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default")}`, logoUrl: "/logo_line.png" },
     ],
   },
 
@@ -34,8 +43,14 @@ export const config = {
     ],
   },
 
+  twitch: {
+    enabled: true,
+    isLive: false, // テスト用: trueにすると強制的にON AIRを表示（API取得値よりも優先）
+    url: "https://www.twitch.tv/inumamiya",
+  },
+
   sections: {
-    highlights: { enabled: true, title: "HIGHLIGHTS" },
+    highlights: { enabled: true, title: "ARCHIVE" },
     clips: { enabled: true, title: "RECOMMENDED CLIPS" },
     style: { enabled: true, title: "STREAM FORMAT" },
     message: { enabled: true, title: "MESSAGE" },
@@ -82,5 +97,10 @@ export const config = {
   theme: {
     scanlines: true,
     grid: true,
+  },
+
+  birthday: {
+    month: 1, // 1-12
+    day: 1,   // 1-31
   },
 } as const;
