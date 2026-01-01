@@ -8,7 +8,6 @@ import { AccessGate } from "@/components/AccessGate";
 import { HeaderHero } from "@/components/HeaderHero";
 import { Ticker } from "@/components/Ticker";
 import { Section } from "@/components/Section";
-import { Highlights } from "@/components/Highlights";
 import { LatestArchive } from "@/components/LatestArchive";
 import { Clips } from "@/components/Clips";
 import { StyleCards } from "@/components/StyleCards";
@@ -25,9 +24,20 @@ export default function Page() {
   const isBirthday = m === config.birthday.month && d === config.birthday.day;
 
   const [showContent, setShowContent] = useState(false); // 常に初期は非表示
+  const [showSections, setShowSections] = useState(false); // 起動演出とQRコード完了まで非表示
 
   useEffect(() => {
     document.title = config.site.title;
+  }, []);
+
+  // 起動演出完了後、QRコードアニメーション完了後にセクションを表示
+  useEffect(() => {
+    // アーカイブの開始タイミングをconfigから取得
+    const timer = setTimeout(() => {
+      setShowSections(true);
+    }, config.animation.archive.startDelay);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -48,13 +58,13 @@ export default function Page() {
           <div className="mt-8 space-y-10">
             {config.sections.highlights.enabled && (
               <Section title={config.sections.highlights.title}>
-                <Highlights />
+                <LatestArchive visible={showSections} />
               </Section>
             )}
 
             {config.sections.clips.enabled && (
               <Section title={config.sections.clips.title}>
-                <Clips />
+                <Clips visible={showSections} />
               </Section>
             )}
 

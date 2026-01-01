@@ -1,11 +1,19 @@
 // src/components/Clips.tsx
 import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { config } from "@/content/config";
 import type { ClipItem, Clip } from "@/types";
 
-export function Clips() {
+type ClipsProps = {
+  visible?: boolean;
+};
+
+export function Clips({ visible = true }: ClipsProps) {
   const [clips, setClips] = useState<ClipItem[]>([]);
   const [thumbs, setThumbs] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [canAnimate, setCanAnimate] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
   
   useEffect(() => {
     let canceled = false;
@@ -75,6 +83,21 @@ export function Clips() {
     };
   }, []);
 
+  // 起動演出完了後、QRコードアニメーション完了後、アーカイブアニメーション完了後にアニメーション開始
+  useEffect(() => {
+    if (shouldReduceMotion) {
+      setCanAnimate(true);
+      return;
+    }
+
+    // クリップのアニメーション開始タイミングをconfigから取得
+    const timer = setTimeout(() => {
+      setCanAnimate(true);
+    }, config.animation.clips.startDelay);
+
+    return () => clearTimeout(timer);
+  }, [shouldReduceMotion]);
+
   if (loading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -94,14 +117,46 @@ export function Clips() {
     );
   }
 
+  const cardVariants = {
+    hidden: {
+      opacity: 0,
+      x: shouldReduceMotion ? 0 : -20, // 左から
+      y: shouldReduceMotion ? 0 : 12,  // QRコードと同じ
+    },
+    visible: (i: number) => ({
+      opacity: 1,
+      x: 0,
+      y: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0 : 0.6,
+        delay: shouldReduceMotion ? 0 : (i * config.animation.clips.cardStagger) / 1000,
+        ease: [0.22, 1, 0.36, 1] as const,
+      },
+    }),
+  };
+
+  // visibleがfalseの場合はinvisibleクラスで非表示（レイアウトは維持）
+  const isVisible = visible && canAnimate;
+  const shouldHide = !visible || (!canAnimate && !shouldReduceMotion);
+
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {clips.map((c) => (
-        <a
+    <div
+      className={[
+        "grid gap-4 sm:grid-cols-2 lg:grid-cols-3",
+        shouldHide ? "invisible pointer-events-none" : "",
+      ].join(" ")}
+      aria-hidden={shouldHide}
+    >
+      {clips.map((c, index) => (
+        <motion.a
           key={c.href}
           href={c.href}
           target="_blank"
           rel="noreferrer"
+          initial="hidden"
+          animate={isVisible ? "visible" : "hidden"}
+          variants={cardVariants}
+          custom={index}
           className="group overflow-hidden rounded-xl border border-white/10 bg-white/5 transition hover:bg-white/10"
         >
           <div className="relative">
@@ -140,7 +195,7 @@ export function Clips() {
               </span>
             </div>
           </div>
-        </a>
+        </motion.a>
       ))}
     </div>
   );

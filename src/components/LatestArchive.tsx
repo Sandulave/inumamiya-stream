@@ -1,47 +1,67 @@
 // src/components/LatestArchive.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { config } from "@/content/config";
 import type { Video } from "@/types";
 
-export function LatestArchive() {
+type LatestArchiveProps = {
+  visible?: boolean;
+};
+
+export function LatestArchive({ visible = true }: LatestArchiveProps) {
   const [videos, setVideos] = useState<Video[]>([]);
   const [thumbs, setThumbs] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [canAnimate, setCanAnimate] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
+
+  // 「ページ表示開始からの経過」を測る
+  const mountedAtRef = useRef<number>(0);
+
+  useEffect(() => {
+    console.log("[LatestArchive]", {
+      loading,
+      shouldReduceMotion,
+      canAnimate,
+      t: typeof performance !== "undefined" ? performance.now() : Date.now(),
+    });
+  }, [loading, shouldReduceMotion, canAnimate]);
+  
+
+  useEffect(() => {
+    mountedAtRef.current = typeof performance !== "undefined" ? performance.now() : Date.now();
+  }, []);
 
   useEffect(() => {
     let canceled = false;
 
     const fetchLatestVideos = async () => {
       try {
-        // 最新3つの動画を取得
         const res = await fetch("/api/latest-video?count=3");
-        if (!res.ok) {
-          throw new Error(`Failed to fetch: ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
 
         const data = await res.json();
         const fetchedVideos: Video[] = data.videos || [];
-        
-        if (!canceled) {
-          setVideos(fetchedVideos);
-          
-          // サムネイルの処理
-          const thumbnailMap: Record<string, string> = {};
-          fetchedVideos.forEach((video) => {
-            if (video.thumbnail) {
-              // 外部URLの場合はプロキシ経由で取得
-              if (video.thumbnail.startsWith("http")) {
-                thumbnailMap[video.url] = `/api/img?url=${encodeURIComponent(video.thumbnail)}`;
-              } else {
-                thumbnailMap[video.url] = video.thumbnail;
-              }
-            } else {
-              thumbnailMap[video.url] = "/ogp.png";
-            }
-          });
-          setThumbs(thumbnailMap);
-          setLoading(false);
-        }
+
+        if (canceled) return;
+
+        setVideos(fetchedVideos);
+
+        const thumbnailMap: Record<string, string> = {};
+        fetchedVideos.forEach((video) => {
+          const key = video.url; // 現状のまま（必要ならidキーに変更もOK）
+          if (video.thumbnail) {
+            thumbnailMap[key] = video.thumbnail.startsWith("http")
+              ? `/api/img?url=${encodeURIComponent(video.thumbnail)}`
+              : video.thumbnail;
+          } else {
+            thumbnailMap[key] = "/ogp.png";
+          }
+        });
+
+        setThumbs(thumbnailMap);
+        setLoading(false);
       } catch (e) {
         if (!canceled) {
           setError(e instanceof Error ? e.message : "Failed to load videos");
@@ -51,12 +71,30 @@ export function LatestArchive() {
     };
 
     fetchLatestVideos();
-
     return () => {
       canceled = true;
     };
   }, []);
 
+  // 起動演出 + QR終了（合計4.7秒）に合わせる：マウントからの残り時間だけ待つ
+  useEffect(() => {
+    if (loading) return;
+
+    if (shouldReduceMotion) {
+      setCanAnimate(true);
+      return;
+    }
+
+    const totalDelayMs = config.animation.archive.startDelay;
+    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+    const elapsed = now - mountedAtRef.current;
+    const remaining = Math.max(0, totalDelayMs - elapsed);
+
+    const timer = window.setTimeout(() => setCanAnimate(true), remaining);
+    return () => window.clearTimeout(timer);
+  }, [loading, shouldReduceMotion]);
+
+  // ロード中はスケルトン表示（今のままでOK）
   if (loading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -74,14 +112,47 @@ export function LatestArchive() {
     );
   }
 
-  if (error || videos.length === 0) {
-    return null;
-  }
+  if (error || videos.length === 0) return null;
+
+  const cardVariants = {
+    hidden: {
+      opacity: 0,
+      x: shouldReduceMotion ? 0 : -20,
+      y: shouldReduceMotion ? 0 : 12,
+    },
+    visible: (i: number) => ({
+      opacity: 1,
+      x: 0,
+      y: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0 : 0.6,
+        delay: shouldReduceMotion ? 0 : (i * config.animation.archive.cardStagger) / 1000,
+        ease: [0.22, 1, 0.36, 1] as const,
+      },
+    }),
+  };
+
+  // visibleがfalseの場合はinvisibleクラスで非表示（レイアウトは維持）
+  const isVisible = visible && canAnimate;
+  const shouldHide = !visible || (!canAnimate && !shouldReduceMotion);
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {videos.map((video) => (
-        <div key={video.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
+    <div
+      className={[
+        "grid gap-4 sm:grid-cols-2 lg:grid-cols-3",
+        shouldHide ? "invisible pointer-events-none" : "",
+      ].join(" ")}
+      aria-hidden={shouldHide}
+    >
+      {videos.map((video, index) => (
+        <motion.div
+          key={video.id}
+          initial="hidden"
+          animate={isVisible ? "visible" : "hidden"}
+          variants={cardVariants}
+          custom={index}
+          className="group rounded-xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10"
+        >
           <a href={video.url} target="_blank" rel="noreferrer" className="block">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -91,20 +162,19 @@ export function LatestArchive() {
               loading="lazy"
               onError={(e) => {
                 const img = e.currentTarget as HTMLImageElement;
-                if (img.src !== "/ogp.png") {
-                  img.src = "/ogp.png";
-                }
+                if (img.src !== "/ogp.png") img.src = "/ogp.png";
               }}
             />
-            <h3 className="text-md font-bold text-white/90 mb-2">{video.title}</h3>
+            <h3 className="text-md font-bold text-white/90 mb-2 group-hover:text-white transition">
+              {video.title}
+            </h3>
             <p className="text-xs text-white/60">
               {new Date(video.createdAt).toLocaleDateString()} ·{" "}
               {video.viewCount.toLocaleString()} views
             </p>
           </a>
-        </div>
+        </motion.div>
       ))}
     </div>
   );
 }
-

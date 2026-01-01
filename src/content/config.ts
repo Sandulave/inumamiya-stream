@@ -45,7 +45,7 @@ export const config = {
 
   twitch: {
     enabled: true,
-    isLive: false, // テスト用: trueにすると強制的にON AIRを表示（API取得値よりも優先）
+    isLive: true, // テスト用: trueにすると強制的にON AIRを表示（API取得値よりも優先）
     url: "https://www.twitch.tv/inumamiya",
   },
 
@@ -102,5 +102,23 @@ export const config = {
   birthday: {
     month: 1, // 1-12
     day: 1,   // 1-31
+  },
+
+  animation: {
+    boot: {
+      delay: 3500, // 起動演出完了までの時間（ms）
+    },
+    qrCodes: {
+      startDelay: 350, // BOOT_DELAY後の開始遅延（ms）
+      cardStagger: 80, // カード間の遅延（ms）
+    },
+    archive: {
+      startDelay: 4000, // ページロードからの開始遅延（ms）
+      cardStagger: 100, // カード間の遅延（ms）
+    },
+    clips: {
+      startDelay: 4400, // ページロードからの開始遅延（ms）
+      cardStagger: 100, // カード間の遅延（ms）
+    },
   },
 } as const;

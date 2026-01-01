@@ -28,8 +28,8 @@ export function HeaderHero() {
   const [showConnecting, setShowConnecting] = useState(false);
   const [showHighlight, setShowHighlight] = useState(false);
 
-  // ★ここだけ好みで調整
-  const BOOT_DELAY_MS = 3500; // ← 遅延時間（あなたが今使ってる値）
+  // アニメーションタイミングをconfigから取得
+  const BOOT_DELAY_MS = config.animation.boot.delay;
   const CONNECTING_MS = 300;  // CONNECTING表示
   const HIGHLIGHT_ON_MS = 50; // アニメ解禁後、光を出すまで
   const HIGHLIGHT_MS = 380;   // 光の表示時間
@@ -168,7 +168,7 @@ export function HeaderHero() {
       y: 0,
       transition: {
         duration: shouldReduceMotion ? 0 : 0.6,
-        delay: shouldReduceMotion ? 0 : 0.35 + i * 0.08,
+        delay: shouldReduceMotion ? 0 : (config.animation.qrCodes.startDelay + i * config.animation.qrCodes.cardStagger) / 1000,
         ease: [0.22, 1, 0.36, 1],
       },
     }),
