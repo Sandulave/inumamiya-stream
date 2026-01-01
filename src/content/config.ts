@@ -35,7 +35,7 @@ export const config = {
 
   ticker: {
     enabled: true,
-    speedSeconds: 22, // 小さいほど速い
+    speedSeconds: 7, // 小さいほど速い
     items: [
       "NOW STREAMING: 雑談 / 時事 / ネットの話題",
       "TOPICS: 今日のトレンド / コメント拾い / ときどきゲーム",
@@ -107,6 +107,10 @@ export const config = {
   animation: {
     boot: {
       delay: 3500, // 起動演出完了までの時間（ms）
+    },
+    profileImage: {
+      startDelay: 1500, // QRコード完了後の開始遅延（ms、QRコード最後のカード完了後）
+      duration: 3000, // アニメーションの持続時間（ms、ゆっくり表示）
     },
     qrCodes: {
       startDelay: 350, // BOOT_DELAY後の開始遅延（ms）

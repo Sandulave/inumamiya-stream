@@ -146,7 +146,7 @@ export function HeaderHero() {
   const profileImageVariants: Variants = {
     hidden: {
       opacity: 0,
-      scale: shouldReduceMotion ? 1 : 0.95,
+      scale: shouldReduceMotion ? 1 : 0.9, // より小さく開始（ジワ～っと拡大）
       y: shouldReduceMotion ? 0 : 8,
     },
     visible: {
@@ -154,9 +154,9 @@ export function HeaderHero() {
       scale: 1,
       y: 0,
       transition: {
-        duration: shouldReduceMotion ? 0 : 0.6,
-        delay: shouldReduceMotion ? 0 : 0.15,
-        ease: [0.22, 1, 0.36, 1],
+        duration: shouldReduceMotion ? 0 : config.animation.profileImage.duration / 1000,
+        delay: shouldReduceMotion ? 0 : config.animation.profileImage.startDelay / 1000,
+        ease: [0.25, 0.46, 0.45, 0.94] as const, // より滑らかなイージング（ジワ～っと）
       },
     },
   };
