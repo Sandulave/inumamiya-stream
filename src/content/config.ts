@@ -54,8 +54,8 @@ export const config = {
   sections: {
     highlights: { enabled: true, title: "ARCHIVE" },
     clips: { enabled: true, title: "RECOMMENDED CLIPS" },
-    style: { enabled: true, title: "STREAM FORMAT" },
-    message: { enabled: true, title: "MESSAGE" },
+    style: { enabled: true, title: "PC SPEC" },
+    message: { enabled: false, title: "MESSAGE" },
   },
 
   // 文章は後で差し替えOK（今は仮で置いてます）
@@ -85,9 +85,12 @@ export const config = {
 
 
   styleCards: [
-    { title: "雑談", items: ["ネットニュース", "エンタメ", "生活の小ネタ"] },
-    { title: "ゲーム", items: ["その日の気分で", "ゆるくプレイ", "話題と一緒に"] },
-    { title: "同時視聴", items: ["イベント", "大会", "話題コンテンツ"] },
+    { title: "CPU", items: ["Intel Core i7-12700K", "12コア / 20スレッド", "最大5.0GHz"] },
+    { title: "GPU", items: ["NVIDIA GeForce RTX 4070", "12GB VRAM", "DLSS 3対応"] },
+    { title: "メモリ", items: ["DDR4-3600 32GB", "デュアルチャネル", "16GB × 2"] },
+    { title: "ストレージ", items: ["NVMe SSD 1TB", "読み込み速度 7000MB/s", "書き込み速度 5000MB/s"] },
+    { title: "マザーボード", items: ["ASUS ROG STRIX Z690", "Wi-Fi 6対応", "Bluetooth 5.2"] },
+    { title: "その他", items: ["電源: 850W 80PLUS Gold", "冷却: 水冷CPUクーラー", "OS: Windows 11 Pro"] },
   ],
 
   message: {
