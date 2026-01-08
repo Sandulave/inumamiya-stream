@@ -1,7 +1,7 @@
 // src/content/config.ts
 export const config = {
   access: {
-    mode: "password" as "password" | "public", // ← "public" にすると誰でも見れる
+    mode: "public" as "password" | "public", // ← "public" にすると誰でも見れる
     // production では NEXT_PUBLIC_ACCESS_PASSWORD を使って上書きしてください（公開リポジトリへはシークレットをコミットしないこと）
     password: process.env.NEXT_PUBLIC_ACCESS_PASSWORD ?? "SHARED-PASS-1234",
     remember: true, // true: このPCでは次回以降パス省略（localStorage）
