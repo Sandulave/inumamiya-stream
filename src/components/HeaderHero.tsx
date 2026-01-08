@@ -473,7 +473,7 @@ export function HeaderHero() {
 
         {/* QR */}
         {config.hero.qrCodes && config.hero.qrCodes.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-4 border-t border-white/10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 pt-4 border-t border-white/10">
             {config.hero.qrCodes.map((qr, index) => (
               <motion.a
                 key={qr.href}
@@ -484,16 +484,16 @@ export function HeaderHero() {
                 animate={canAnimate ? "show" : "hidden"}
                 variants={qrCardVariants}
                 custom={index}
-                className="group flex flex-col items-center rounded-2xl bg-white/5 border border-white/10 p-4 text-center transition hover:-translate-y-0.5 hover:bg-white/10"
+                className="group flex flex-col items-center rounded-2xl bg-white/5 border border-white/10 p-3 sm:p-4 text-center transition hover:-translate-y-0.5 hover:bg-white/10"
               >
-                <span className="text-sm text-white/70 mb-3 group-hover:text-white/90 transition">
+                <span className="text-sm text-white/70 mb-2 sm:mb-3 group-hover:text-white/90 transition">
                   {qr.label}
                 </span>
-                <div className="relative w-40 h-40 flex items-center justify-center">
+                <div className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 flex items-center justify-center">
                   <img src={qr.qrUrl} alt={`${qr.label} QR Code`} className="w-full h-full object-contain" />
                   {qr.logoUrl && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <img src={qr.logoUrl} alt="Logo" className="w-9 h-9 rounded-full border-3 border-white bg-white object-cover" />
+                      <img src={qr.logoUrl} alt="Logo" className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-full border-2 sm:border-3 border-white bg-white object-cover" />
                     </div>
                   )}
                 </div>
