@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "INUMAMIYA | STREAM NEWSROOM",
+  title: "INUMAMIYA",
   description: "配信者・いぬまみやさんの活動を紹介する非公式ページ",
   openGraph: {
     title: "INUMAMIYA | STREAM NEWSROOM",
