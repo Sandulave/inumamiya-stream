@@ -28,7 +28,7 @@ export const config = {
       { label: "うｐろだ", href: "https://ux.getuploader.com/NewInumamiya/" },
     ],
     qrCodes: [
-      { label: "Discord", href: "https://discord.gg/7mqgDxey", qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent("https://discord.gg/7mqgDxey")}`, logoUrl: "/logo_Discord.png" },
+      { label: "Discord", href: "https://discord.gg/CcRNgETs7W", qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent("https://discord.gg/7mqgDxey")}`, logoUrl: "/logo_Discord.png" },
       { label: "YouTube", href: "https://www.youtube.com/channel/UC3K67dwtrnZFI_dVn5LYWGA", qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent("https://www.youtube.com/channel/UC3K67dwtrnZFI_dVn5LYWGA")}`, logoUrl: "/logo_inu_youtube.png" },
       { label: "どもども動画部", href: "https://www.youtube.com/channel/UCeaXl91nkdPp6isMzI548vg", qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent("https://www.youtube.com/channel/UCeaXl91nkdPp6isMzI548vg")}`, logoUrl: "/logo_domodomo_douga.png" },
       { label: "LINE OPENCHAT", href: "https://line.me/ti/g2/nbHvs4pt-v_8nhwuRxD_o0CEAM1L1HiFBfpzqA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default", qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent("https://line.me/ti/g2/nbHvs4pt-v_8nhwuRxD_o0CEAM1L1HiFBfpzqA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default")}`, logoUrl: "/logo_line.png" },
