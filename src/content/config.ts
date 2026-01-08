@@ -19,6 +19,8 @@ export const config = {
     name: "いぬまみや",
     subtitle: "ネットの話題を、落ち着いた雑談の温度で。",
     logoUrl: "/logo.png", // QRコード中央に表示するロゴ画像のパス（publicフォルダ内のパス）
+    profileMarqueeImages: ["/profile/inu_kao1.png", "/profile/inu_kao2.png", "/profile/inu_kao3.jpeg", "/profile/inu_kao4.jpg"], // プロフィール画像マーキーに表示する追加画像URL（string[]）
+    profileMarqueeScrollSpeed: 1, // スクロール速度（px/frame）
     ctas: [
       { label: "Twitch", href: "https://www.twitch.tv/inumamiya" },
       { label: "X", href: "https://x.com/inu_no_gohan" },
@@ -45,7 +47,7 @@ export const config = {
 
   twitch: {
     enabled: true,
-    isLive: true, // テスト用: trueにすると強制的にON AIRを表示（API取得値よりも優先）
+    isLive: false, // テスト用: trueにすると強制的にON AIRを表示（API取得値よりも優先）
     url: "https://www.twitch.tv/inumamiya",
   },
 

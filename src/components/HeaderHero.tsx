@@ -1,5 +1,5 @@
 // src/components/HeaderHero.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { config } from "@/content/config";
@@ -73,10 +73,15 @@ export function HeaderHero() {
     const fetchTwitchStatus = async () => {
       try {
         const res = await fetch("/api/twitch/status");
-        if (!res.ok) return;
+        if (!res.ok) {
+          console.error("[HeaderHero] Twitch status API error:", res.status, res.statusText);
+          if (!canceled) setTwitchStatus({ isLive: false, title: undefined, startedAt: undefined });
+          return;
+        }
         const data = (await res.json()) as TwitchStatus;
         if (!canceled) setTwitchStatus(data);
-      } catch {
+      } catch (error) {
+        console.error("[HeaderHero] Error fetching Twitch status:", error);
         if (!canceled) setTwitchStatus({ isLive: false, title: undefined, startedAt: undefined });
       }
     };
@@ -118,6 +123,113 @@ export function HeaderHero() {
       canceled = true;
     };
   }, []);
+
+  // プロフィール画像マーキー用の状態
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartXRef = useRef(0);
+  const dragStartScrollLeftRef = useRef(0);
+  const scrollSpeedRef = useRef(config.hero.profileMarqueeScrollSpeed);
+
+  // 画像配列の準備（profileImageUrl + config.hero.profileMarqueeImages）
+  const allImages = useMemo(() => {
+    const images: string[] = [];
+    if (profileImageUrl) {
+      images.push(profileImageUrl);
+    }
+    if (config.hero.profileMarqueeImages) {
+      images.push(...config.hero.profileMarqueeImages);
+    }
+    return images.length > 0 ? images : [];
+  }, [profileImageUrl]);
+
+  // 2周分の画像配列を作成
+  const doubledImages = useMemo(() => {
+    if (allImages.length === 0) return [];
+    return [...allImages, ...allImages];
+  }, [allImages]);
+
+  // 自動スクロール処理
+  useEffect(() => {
+    if (shouldReduceMotion || !isHovered || isDragging || allImages.length === 0) {
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+      return;
+    }
+
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const scroll = () => {
+      const currentScroll = container.scrollLeft;
+      const maxScroll = container.scrollWidth / 2; // 1周分の幅
+
+      if (currentScroll >= maxScroll) {
+        // 1周分スクロールしたら先頭に戻す（シームレスに）
+        container.scrollLeft = currentScroll - maxScroll;
+      } else {
+        container.scrollLeft += scrollSpeedRef.current;
+      }
+
+      animationFrameRef.current = requestAnimationFrame(scroll);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(scroll);
+
+    return () => {
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+    };
+  }, [shouldReduceMotion, isHovered, isDragging, allImages.length]);
+
+  // ドラッグ開始
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (shouldReduceMotion || allImages.length === 0) return;
+    setIsDragging(true);
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    dragStartXRef.current = e.clientX;
+    dragStartScrollLeftRef.current = container.scrollLeft;
+    container.style.cursor = "grabbing";
+    e.preventDefault();
+  }, [shouldReduceMotion, allImages.length]);
+
+  // ドラッグ中
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging || shouldReduceMotion || allImages.length === 0) return;
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const deltaX = dragStartXRef.current - e.clientX;
+    container.scrollLeft = dragStartScrollLeftRef.current + deltaX;
+  }, [isDragging, shouldReduceMotion, allImages.length]);
+
+  // ドラッグ終了
+  const handleMouseUp = useCallback(() => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.style.cursor = "grab";
+    }
+  }, [isDragging]);
+
+  // マウスリーブ時にドラッグ状態もリセット
+  const handleMouseLeave = useCallback(() => {
+    setIsHovered(false);
+    if (isDragging) {
+      setIsDragging(false);
+      const container = scrollContainerRef.current;
+      if (container) {
+        container.style.cursor = "grab";
+      }
+    }
+  }, [isDragging]);
 
   // 既存仕様：configで強制ON/OFFできる
   const isLive = Boolean(config.twitch.isLive || twitchStatus.isLive);
@@ -316,15 +428,43 @@ export function HeaderHero() {
             </div>
           </div>
 
-          {/* 画像が来てもレイアウトがガクッと変わらないように枠確保 */}
+          {/* プロフィール画像マーキー */}
           <motion.div
             initial="hidden"
             animate={canAnimate ? "visible" : "hidden"}
             variants={profileImageVariants}
             className="flex items-center justify-center md:justify-end min-h-[256px] w-[256px]"
           >
-            {profileImageUrl ? (
-              <img src={profileImageUrl} alt="Profile" className="h-64 w-64 object-cover" />
+            {allImages.length > 0 ? (
+              <div
+                ref={scrollContainerRef}
+                className="w-[256px] h-[256px] overflow-x-auto overflow-y-hidden rounded-xl scrollbar-hide"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={handleMouseLeave}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                style={{
+                  cursor: shouldReduceMotion || allImages.length === 0 ? "default" : "grab",
+                }}
+              >
+                <div
+                  className="flex h-full"
+                  style={{
+                    width: `${doubledImages.length * 256}px`,
+                  }}
+                >
+                  {doubledImages.map((imgUrl, index) => (
+                    <img
+                      key={`${imgUrl}-${index}`}
+                      src={imgUrl}
+                      alt={`Profile ${index + 1}`}
+                      className="h-[256px] w-[256px] flex-shrink-0 object-cover"
+                      draggable={false}
+                    />
+                  ))}
+                </div>
+              </div>
             ) : (
               <div className="h-64 w-64 rounded-xl bg-white/5" />
             )}
