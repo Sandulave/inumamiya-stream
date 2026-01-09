@@ -84,14 +84,81 @@ export const config = {
 // ],
 
 
-  styleCards: [
-    { title: "CPU", items: ["Intel Core i7-12700K", "12コア / 20スレッド", "最大5.0GHz"] },
-    { title: "GPU", items: ["NVIDIA GeForce RTX 4070", "12GB VRAM", "DLSS 3対応"] },
-    { title: "メモリ", items: ["DDR4-3600 32GB", "デュアルチャネル", "16GB × 2"] },
-    { title: "ストレージ", items: ["NVMe SSD 1TB", "読み込み速度 7000MB/s", "書き込み速度 5000MB/s"] },
-    { title: "マザーボード", items: ["ASUS ROG STRIX Z690", "Wi-Fi 6対応", "Bluetooth 5.2"] },
-    { title: "その他", items: ["電源: 850W 80PLUS Gold", "冷却: 水冷CPUクーラー", "OS: Windows 11 Pro"] },
-  ],
+styleCards: [
+  {
+    title: "OS",
+    items: [
+      "Windows 11 Home 64bit（ディスク付属）",
+      "セットアップにMicrosoftアカウントが必要",
+      "Officeなし / セキュリティソフトなし（標準機能）",
+    ],
+  },
+  {
+    title: "CPU",
+    items: [
+      "AMD Ryzen 7 9700X",
+      "8コア / 16スレッド",
+      "定格 3.8GHz / Boost 最大 5.5GHz",
+    ],
+  },
+  {
+    title: "CPUクーラー",
+    items: [
+      "ID-COOLING ヒートパイプ式",
+      "120mm PWM Fan（静音FAN）",
+      "型番: FROZN-A410",
+    ],
+  },
+  {
+    title: "GPU",
+    items: [
+      "NVIDIA GeForce RTX 5070 Ti",
+      "16GB VRAM",
+      "出力: HDMI ×1 / DisplayPort ×3（3スロット占有）",
+    ],
+  },
+  {
+    title: "マザーボード",
+    items: [
+      "ASUS TUF GAMING B650-PLUS WIFI（ATX）",
+      "有線: 2.5GBASE-T",
+      "無線: Wi-Fi 6 / Bluetooth 5.2",
+    ],
+  },
+  {
+    title: "メモリ",
+    items: [
+      "DDR5-5600 16GB",
+      "型番: MTC8C1084S1UC56BD1",
+      "※動作クロックは組み合わせにより異なる場合あり",
+    ],
+  },
+  {
+    title: "ストレージ",
+    items: [
+      "WD Black SN7100 1TB（M.2 Gen4 / NVMe）",
+      "読込 最大 7250MB/s",
+      "書込 最大 6900MB/s",
+    ],
+  },
+  {
+    title: "電源・ケース",
+    items: [
+      "電源: 750W 80PLUS GOLD（CWT製 GPW750SB）",
+      "ATX3.1 準拠",
+      "ケース: G-GEAR プレミアムミドルタワー（フロント12cmファン×1）",
+    ],
+  },
+  {
+    title: "その他",
+    items: [
+      "GPUサポートホルダー付属（66JDGPUFLD）",
+      "Officeなし",
+      "下取りサービスなし",
+    ],
+  },
+],
+
 
   message: {
     body:
