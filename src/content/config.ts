@@ -172,8 +172,8 @@ styleCards: [
   },
 
   birthday: {
-    month: 1, // 1-12
-    day: 1,   // 1-31
+    month: 3, // 1-12
+    day: 26,   // 1-31
   },
 
   animation: {
