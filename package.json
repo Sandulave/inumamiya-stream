@@ -10,6 +10,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.6.1",
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.23.26",
     "next": "16.1.1",
