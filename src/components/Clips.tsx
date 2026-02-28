@@ -1,4 +1,4 @@
-// src/components/Clips.tsx
+﻿// src/components/Clips.tsx
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { config } from "@/content/config";
@@ -12,7 +12,7 @@ export function Clips({ visible = true }: ClipsProps) {
   const [clips, setClips] = useState<ClipItem[]>([]);
   const [thumbs, setThumbs] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
-  const [canAnimate, setCanAnimate] = useState(false);
+  const [animationReady, setAnimationReady] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   
   useEffect(() => {
@@ -20,7 +20,7 @@ export function Clips({ visible = true }: ClipsProps) {
 
     const fetchClips = async () => {
       try {
-        // top-clips APIからクリップを取得（再生回数順に3つ）
+        // top-clips API縺九ｉ繧ｯ繝ｪ繝・・繧貞叙蠕暦ｼ亥・逕溷屓謨ｰ鬆・↓3縺､・・
         const res = await fetch("/api/top-clips?count=3");
         
         if (!res.ok) {
@@ -34,7 +34,7 @@ export function Clips({ visible = true }: ClipsProps) {
         const data = await res.json();
         const apiClips: Clip[] = data.clips || [];
 
-        // Clip型をClipItem型に変換
+        // Clip蝙九ｒClipItem蝙九↓螟画鋤
         const clipItems: ClipItem[] = apiClips.map((clip) => ({
           title: clip.title,
           href: clip.url,
@@ -45,12 +45,12 @@ export function Clips({ visible = true }: ClipsProps) {
           setClips(clipItems);
         }
 
-        // サムネイルの処理
+        // 繧ｵ繝繝阪う繝ｫ縺ｮ蜃ｦ逅・
         const results = await Promise.all(
           clipItems.map(async (c) => {
-            // サムネイルが既にAPIから取得できている場合はそれを使用
+            // 繧ｵ繝繝阪う繝ｫ縺梧里縺ｫAPI縺九ｉ蜿門ｾ励〒縺阪※縺・ｋ蝣ｴ蜷医・縺昴ｌ繧剃ｽｿ逕ｨ
             if (c.thumbnail) {
-              // 外部URLの場合はプロキシ経由で取得
+              // 螟夜ΚURL縺ｮ蝣ｴ蜷医・繝励Ο繧ｭ繧ｷ邨檎罰縺ｧ蜿門ｾ・
               if (c.thumbnail.startsWith("http")) {
                 const proxied = `/api/img?url=${encodeURIComponent(c.thumbnail)}`;
                 return [c.href, proxied] as const;
@@ -58,7 +58,7 @@ export function Clips({ visible = true }: ClipsProps) {
               return [c.href, c.thumbnail] as const;
             }
 
-            // サムネイルがない場合はフォールバック画像
+            // 繧ｵ繝繝阪う繝ｫ縺後↑縺・ｴ蜷医・繝輔か繝ｼ繝ｫ繝舌ャ繧ｯ逕ｻ蜒・
             return [c.href, "/ogp.png"] as const;
           })
         );
@@ -83,20 +83,19 @@ export function Clips({ visible = true }: ClipsProps) {
     };
   }, []);
 
-  // 起動演出完了後、QRコードアニメーション完了後、アーカイブアニメーション完了後にアニメーション開始
+  // 襍ｷ蜍墓ｼ泌・螳御ｺ・ｾ後＿R繧ｳ繝ｼ繝峨い繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ螳御ｺ・ｾ後√い繝ｼ繧ｫ繧､繝悶い繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ螳御ｺ・ｾ後↓繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ髢句ｧ・
   useEffect(() => {
-    if (shouldReduceMotion) {
-      setCanAnimate(true);
-      return;
-    }
+    if (shouldReduceMotion) return;
 
-    // クリップのアニメーション開始タイミングをconfigから取得
+    // 繧ｯ繝ｪ繝・・縺ｮ繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ髢句ｧ九ち繧､繝溘Φ繧ｰ繧団onfig縺九ｉ蜿門ｾ・
     const timer = setTimeout(() => {
-      setCanAnimate(true);
+      setAnimationReady(true);
     }, config.animation.clips.startDelay);
 
     return () => clearTimeout(timer);
   }, [shouldReduceMotion]);
+
+  const canAnimate = shouldReduceMotion || animationReady;
 
   if (loading) {
     return (
@@ -120,8 +119,8 @@ export function Clips({ visible = true }: ClipsProps) {
   const cardVariants = {
     hidden: {
       opacity: 0,
-      x: shouldReduceMotion ? 0 : -20, // 左から
-      y: shouldReduceMotion ? 0 : 12,  // QRコードと同じ
+      x: shouldReduceMotion ? 0 : -20, // 蟾ｦ縺九ｉ
+      y: shouldReduceMotion ? 0 : 12,  // QR繧ｳ繝ｼ繝峨→蜷後§
     },
     visible: (i: number) => ({
       opacity: 1,
@@ -135,7 +134,7 @@ export function Clips({ visible = true }: ClipsProps) {
     }),
   };
 
-  // visibleがfalseの場合はinvisibleクラスで非表示（レイアウトは維持）
+  // visible縺掲alse縺ｮ蝣ｴ蜷医・invisible繧ｯ繝ｩ繧ｹ縺ｧ髱櫁｡ｨ遉ｺ・医Ξ繧､繧｢繧ｦ繝医・邯ｭ謖・ｼ・
   const isVisible = visible && canAnimate;
   const shouldHide = !visible || (!canAnimate && !shouldReduceMotion);
 
@@ -157,7 +156,7 @@ export function Clips({ visible = true }: ClipsProps) {
           animate={isVisible ? "visible" : "hidden"}
           variants={cardVariants}
           custom={index}
-          className="group overflow-hidden rounded-xl border border-white/10 bg-white/5 transition hover:bg-white/10"
+          className="lux-card group overflow-hidden rounded-xl border border-white/10 bg-white/5"
         >
           <div className="relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -179,7 +178,7 @@ export function Clips({ visible = true }: ClipsProps) {
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-70" />
             <div className="pointer-events-none absolute bottom-2 left-2 inline-flex items-center rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-xs text-white/90 backdrop-blur">
-              ▶ Clip
+              Clip
             </div>
           </div>
 
@@ -191,7 +190,7 @@ export function Clips({ visible = true }: ClipsProps) {
             <div className="mt-3 inline-flex items-center text-xs text-white/70">
               Open{" "}
               <span className="ml-2 opacity-60 transition group-hover:opacity-100">
-                ↗
+                &gt;
               </span>
             </div>
           </div>
@@ -200,4 +199,5 @@ export function Clips({ visible = true }: ClipsProps) {
     </div>
   );
 }
+
 

@@ -7,7 +7,7 @@ export function StyleCards() {
       {config.styleCards.map((card) => (
         <div
           key={card.title}
-          className="rounded-xl border border-white/10 bg-white/5 p-4"
+          className="lux-card rounded-xl border border-white/10 bg-white/5 p-4"
         >
           <div className="text-sm font-semibold">{card.title}</div>
           <ul className="mt-3 space-y-2 text-sm text-white/75">

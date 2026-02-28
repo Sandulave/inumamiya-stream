@@ -9,9 +9,14 @@ type Props = {
 };
 
 export function BirthdayCelebrate({ birthday, onComplete }: Props) {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
   const confettiFiredRef = useRef(false);
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   // 今日が誕生日かどうかを判定
   const isBirthday = birthday ? (() => {
@@ -23,9 +28,6 @@ export function BirthdayCelebrate({ birthday, onComplete }: Props) {
   })() : false;
 
   useEffect(() => {
-    // 初回表示時とリロード時に表示
-    setShow(true);
-
     // 誕生日の場合のみクラッカーを発射
     let t1: NodeJS.Timeout | undefined;
     if (isBirthday) {
@@ -71,7 +73,7 @@ export function BirthdayCelebrate({ birthday, onComplete }: Props) {
     // 3秒後に完全に非表示にしてコールバック実行
     const t3 = setTimeout(() => {
       setShow(false);
-      onComplete?.();
+      onCompleteRef.current?.();
     }, 3000);
 
     return () => {
@@ -79,7 +81,7 @@ export function BirthdayCelebrate({ birthday, onComplete }: Props) {
       clearTimeout(t2);
       clearTimeout(t3);
     };
-  }, [onComplete, isBirthday, birthday]);
+  }, [isBirthday, birthday]);
 
   if (!show) return null;
 

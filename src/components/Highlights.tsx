@@ -94,7 +94,7 @@ export function Highlights() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.35 }}
-          className="rounded-xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10 group"
+          className="lux-card rounded-xl border border-white/10 bg-white/5 p-4 group"
         >
           <div className="relative aspect-video rounded-lg overflow-hidden mb-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -127,4 +127,3 @@ export function Highlights() {
     </div>
   );
 }
-

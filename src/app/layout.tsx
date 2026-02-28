@@ -14,6 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://inumamiya-stream.vercel.app"
+  ),
   title: "INUMAMIYA",
   description: "配信者・いぬまみやさんの活動を紹介する非公式ページ",
   openGraph: {

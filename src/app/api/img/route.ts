@@ -22,6 +22,8 @@ export async function GET(req: Request) {
     "clips.twitch.tv",
     "www.twitch.tv",
     "twitch.tv",
+    "cdn.discordapp.com",
+    "media.discordapp.net",
   ]);
 
   if (!allowedHosts.has(target.hostname)) {

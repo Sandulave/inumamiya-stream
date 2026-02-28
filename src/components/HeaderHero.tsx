@@ -1,4 +1,4 @@
-// src/components/HeaderHero.tsx
+﻿// src/components/HeaderHero.tsx
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { Variants } from "framer-motion";
@@ -12,6 +12,11 @@ type TwitchStatus = {
   startedAt?: string;
 };
 
+const BOOT_DELAY_MS = config.animation.boot.delay;
+const CONNECTING_MS = 300;
+const HIGHLIGHT_ON_MS = 50;
+const HIGHLIGHT_MS = 380;
+
 export function HeaderHero() {
   const ctas: readonly CTA[] = config.hero.ctas;
   const shouldReduceMotion = useReducedMotion();
@@ -23,50 +28,39 @@ export function HeaderHero() {
     startedAt: undefined,
   });
 
-  // ✅ 毎回の起動演出・遅延（リロード含む）
-  const [canAnimate, setCanAnimate] = useState(false);
-  const [showConnecting, setShowConnecting] = useState(false);
+  // 笨・豈主屓縺ｮ襍ｷ蜍墓ｼ泌・繝ｻ驕・ｻｶ・医Μ繝ｭ繝ｼ繝牙性繧・・
+  const [bootAnimationReady, setBootAnimationReady] = useState(false);
+  const [showConnecting, setShowConnecting] = useState(!shouldReduceMotion);
   const [showHighlight, setShowHighlight] = useState(false);
+  const canAnimate = shouldReduceMotion || bootAnimationReady;
 
-  // アニメーションタイミングをconfigから取得
-  const BOOT_DELAY_MS = config.animation.boot.delay;
-  const CONNECTING_MS = 300;  // CONNECTING表示
-  const HIGHLIGHT_ON_MS = 50; // アニメ解禁後、光を出すまで
-  const HIGHLIGHT_MS = 380;   // 光の表示時間
+  // 繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ繧ｿ繧､繝溘Φ繧ｰ繧団onfig縺九ｉ蜿門ｾ・
 
-  // 起動→遅延→表示→ハイライト（毎回）
+  // 襍ｷ蜍補・驕・ｻｶ竊定｡ｨ遉ｺ竊偵ワ繧､繝ｩ繧､繝茨ｼ域ｯ主屓・・
   useEffect(() => {
-    if (shouldReduceMotion) {
-      setCanAnimate(true);
-      return;
-    }
-
-    setCanAnimate(false);
-    setShowConnecting(true);
-    setShowHighlight(false);
+    if (shouldReduceMotion) return;
 
     const t1 = setTimeout(() => setShowConnecting(false), CONNECTING_MS);
+    let t3: ReturnType<typeof setTimeout> | null = null;
+    let t4: ReturnType<typeof setTimeout> | null = null;
 
     const t2 = setTimeout(() => {
-      setCanAnimate(true);
-
-      const t3 = setTimeout(() => {
+      setBootAnimationReady(true);
+      t3 = setTimeout(() => {
         setShowHighlight(true);
-
-        const t4 = setTimeout(() => setShowHighlight(false), HIGHLIGHT_MS);
-        return () => clearTimeout(t4);
+        t4 = setTimeout(() => setShowHighlight(false), HIGHLIGHT_MS);
       }, HIGHLIGHT_ON_MS);
-
-      return () => clearTimeout(t3);
     }, BOOT_DELAY_MS);
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
+      if (t3) clearTimeout(t3);
+      if (t4) clearTimeout(t4);
     };
   }, [shouldReduceMotion]);
 
-  // Twitch配信状況を取得（初回 + 60秒ごと）
+  // Twitch驟堺ｿ｡迥ｶ豕√ｒ蜿門ｾ暦ｼ亥・蝗・+ 60遘偵＃縺ｨ・・
   useEffect(() => {
     let canceled = false;
 
@@ -86,7 +80,7 @@ export function HeaderHero() {
       }
     };
 
-    // 初回取得（CONNECTINGの直後に）
+    // 蛻晏屓蜿門ｾ暦ｼ・ONNECTING縺ｮ逶ｴ蠕後↓・・
     const initial = setTimeout(() => fetchTwitchStatus(), CONNECTING_MS);
 
     const interval = setInterval(() => {
@@ -100,7 +94,7 @@ export function HeaderHero() {
     };
   }, []);
 
-  // プロフィール画像を取得
+  // 繝励Ο繝輔ぅ繝ｼ繝ｫ逕ｻ蜒上ｒ蜿門ｾ・
   useEffect(() => {
     let canceled = false;
 
@@ -124,7 +118,7 @@ export function HeaderHero() {
     };
   }, []);
 
-  // プロフィール画像マーキー用の状態
+  // 繝励Ο繝輔ぅ繝ｼ繝ｫ逕ｻ蜒上・繝ｼ繧ｭ繝ｼ逕ｨ縺ｮ迥ｶ諷・
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -133,7 +127,7 @@ export function HeaderHero() {
   const dragStartScrollLeftRef = useRef(0);
   const scrollSpeedRef = useRef(config.hero.profileMarqueeScrollSpeed);
 
-  // 画像配列の準備（profileImageUrl + config.hero.profileMarqueeImages）
+  // 逕ｻ蜒城・蛻励・貅門ｙ・・rofileImageUrl + config.hero.profileMarqueeImages・・
   const allImages = useMemo(() => {
     const images: string[] = [];
     if (profileImageUrl) {
@@ -145,13 +139,13 @@ export function HeaderHero() {
     return images.length > 0 ? images : [];
   }, [profileImageUrl]);
 
-  // 2周分の画像配列を作成
+  // 2蜻ｨ蛻・・逕ｻ蜒城・蛻励ｒ菴懈・
   const doubledImages = useMemo(() => {
     if (allImages.length === 0) return [];
     return [...allImages, ...allImages];
   }, [allImages]);
 
-  // 自動スクロール処理
+  // 閾ｪ蜍輔せ繧ｯ繝ｭ繝ｼ繝ｫ蜃ｦ逅・
   useEffect(() => {
     if (shouldReduceMotion || !isHovered || isDragging || allImages.length === 0) {
       if (animationFrameRef.current !== null) {
@@ -166,10 +160,10 @@ export function HeaderHero() {
 
     const scroll = () => {
       const currentScroll = container.scrollLeft;
-      const maxScroll = container.scrollWidth / 2; // 1周分の幅
+      const maxScroll = container.scrollWidth / 2; // 1蜻ｨ蛻・・蟷・
 
       if (currentScroll >= maxScroll) {
-        // 1周分スクロールしたら先頭に戻す（シームレスに）
+        // 1蜻ｨ蛻・せ繧ｯ繝ｭ繝ｼ繝ｫ縺励◆繧牙・鬆ｭ縺ｫ謌ｻ縺呻ｼ医す繝ｼ繝繝ｬ繧ｹ縺ｫ・・
         container.scrollLeft = currentScroll - maxScroll;
       } else {
         container.scrollLeft += scrollSpeedRef.current;
@@ -188,7 +182,7 @@ export function HeaderHero() {
     };
   }, [shouldReduceMotion, isHovered, isDragging, allImages.length]);
 
-  // ドラッグ開始
+  // 繝峨Λ繝・げ髢句ｧ・
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (shouldReduceMotion || allImages.length === 0) return;
     setIsDragging(true);
@@ -200,7 +194,7 @@ export function HeaderHero() {
     e.preventDefault();
   }, [shouldReduceMotion, allImages.length]);
 
-  // ドラッグ中
+  // 繝峨Λ繝・げ荳ｭ
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!isDragging || shouldReduceMotion || allImages.length === 0) return;
     const container = scrollContainerRef.current;
@@ -209,7 +203,7 @@ export function HeaderHero() {
     container.scrollLeft = dragStartScrollLeftRef.current + deltaX;
   }, [isDragging, shouldReduceMotion, allImages.length]);
 
-  // ドラッグ終了
+  // 繝峨Λ繝・げ邨ゆｺ・
   const handleMouseUp = useCallback(() => {
     if (!isDragging) return;
     setIsDragging(false);
@@ -219,7 +213,7 @@ export function HeaderHero() {
     }
   }, [isDragging]);
 
-  // マウスリーブ時にドラッグ状態もリセット
+  // 繝槭え繧ｹ繝ｪ繝ｼ繝匁凾縺ｫ繝峨Λ繝・げ迥ｶ諷九ｂ繝ｪ繧ｻ繝・ヨ
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
     if (isDragging) {
@@ -231,11 +225,11 @@ export function HeaderHero() {
     }
   }, [isDragging]);
 
-  // 既存仕様：configで強制ON/OFFできる
+  // 譌｢蟄倅ｻ墓ｧ假ｼ喞onfig縺ｧ蠑ｷ蛻ｶON/OFF縺ｧ縺阪ｋ
   const isLive = Boolean(config.twitch.isLive || twitchStatus.isLive);
   const liveTitle = twitchStatus.title;
 
-  // アニメーションバリアント（静かなズーム着地入り）
+  // 繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ繝舌Μ繧｢繝ｳ繝茨ｼ磯撕縺九↑繧ｺ繝ｼ繝逹蝨ｰ蜈･繧奇ｼ・
   const heroVariants: Variants = {
     hidden: {
       opacity: 0,
@@ -258,7 +252,7 @@ export function HeaderHero() {
   const profileImageVariants: Variants = {
     hidden: {
       opacity: 0,
-      scale: shouldReduceMotion ? 1 : 0.9, // より小さく開始（ジワ～っと拡大）
+      scale: shouldReduceMotion ? 1 : 0.9, // 繧医ｊ蟆上＆縺城幕蟋具ｼ医ず繝ｯ・槭▲縺ｨ諡｡螟ｧ・・
       y: shouldReduceMotion ? 0 : 8,
     },
     visible: {
@@ -268,7 +262,7 @@ export function HeaderHero() {
       transition: {
         duration: shouldReduceMotion ? 0 : config.animation.profileImage.duration / 1000,
         delay: shouldReduceMotion ? 0 : config.animation.profileImage.startDelay / 1000,
-        ease: [0.25, 0.46, 0.45, 0.94] as const, // より滑らかなイージング（ジワ～っと）
+        ease: [0.25, 0.46, 0.45, 0.94] as const, // 繧医ｊ貊代ｉ縺九↑繧､繝ｼ繧ｸ繝ｳ繧ｰ・医ず繝ｯ・槭▲縺ｨ・・
       },
     },
   };
@@ -286,40 +280,32 @@ export function HeaderHero() {
     }),
   };
 
-  const LiveDot = () => (
-    <motion.span
-      className="relative w-2 h-2"
-      animate={
-        isLive
-          ? { x: [0, -1, 1, -1, 1, 0], y: [0, 1, -1, 1, -1, 0] }
-          : { x: 0, y: 0 }
-      }
-      transition={
-        isLive
-          ? { duration: 0.18, ease: "linear", repeat: Infinity, repeatDelay: 1.2 }
-          : { duration: 0 }
-      }
-    >
-      {/* ✅ ピン円（広がる円）復活：配信中だけ */}
-      {isLive && (
-        <span className="absolute inset-0 w-2 h-2 rounded-full bg-red-500/25 animate-ping" />
-      )}
-
-      {/* ぼんやり光る外側 */}
-      <span className="absolute inset-0 w-2 h-2 rounded-full bg-red-500/35 blur-sm" />
-      {/* 本体 */}
-      <span className="relative w-2 h-2 rounded-full bg-red-500" />
-    </motion.span>
-  );
-
-  const LiveBadgeInner = () => (
+  const liveBadgeInner = (
     <span className="relative flex items-center gap-2">
-      <LiveDot />
+      <motion.span
+        className="relative w-2 h-2"
+        animate={
+          isLive
+            ? { x: [0, -1, 1, -1, 1, 0], y: [0, 1, -1, 1, -1, 0] }
+            : { x: 0, y: 0 }
+        }
+        transition={
+          isLive
+            ? { duration: 0.18, ease: "linear", repeat: Infinity, repeatDelay: 1.2 }
+            : { duration: 0 }
+        }
+      >
+        {isLive && (
+          <span className="absolute inset-0 w-2 h-2 rounded-full bg-red-500/25 animate-ping" />
+        )}
+        <span className="absolute inset-0 w-2 h-2 rounded-full bg-red-500/35 blur-sm" />
+        <span className="relative w-2 h-2 rounded-full bg-red-500" />
+      </motion.span>
       <span className="font-bold tracking-wide">{config.hero.liveTag}</span>
     </span>
   );
 
-  const LiveBadge = () => {
+  const renderLiveBadge = () => {
     if (isLive) {
       return config.twitch.url ? (
         <a
@@ -329,17 +315,17 @@ export function HeaderHero() {
           className="inline-flex items-center gap-2 hover:scale-105 transition-transform"
         >
           <Pill tone="red" isLive>
-            <LiveBadgeInner />
+            {liveBadgeInner}
           </Pill>
         </a>
       ) : (
         <Pill tone="red" isLive>
-          <LiveBadgeInner />
+          {liveBadgeInner}
         </Pill>
       );
     }
 
-    // OFF AIR 側もリンク復活
+    // OFF AIR 蛛ｴ繧ゅΜ繝ｳ繧ｯ蠕ｩ豢ｻ
     return config.twitch.url ? (
       <a
         href={config.twitch.url}
@@ -365,7 +351,7 @@ export function HeaderHero() {
       variants={heroVariants}
       className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur"
     >
-      {/* 本番用：中心から広がる白い光（遅延後に表示、毎回） */}
+      {/* 譛ｬ逡ｪ逕ｨ・壻ｸｭ蠢・°繧牙ｺ・′繧狗區縺・・・磯≦蟒ｶ蠕後↓陦ｨ遉ｺ縲∵ｯ主屓・・*/}
       {showHighlight && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -379,6 +365,25 @@ export function HeaderHero() {
         />
       )}
 
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <motion.div
+          className="absolute -left-1/3 top-0 h-full w-1/3"
+          style={{
+            background:
+              "linear-gradient(100deg, transparent 0%, rgba(255,219,153,0.02) 25%, rgba(255,224,163,0.18) 50%, rgba(255,219,153,0.02) 75%, transparent 100%)",
+            filter: "blur(1px)",
+          }}
+          initial={{ x: "-130%" }}
+          animate={canAnimate ? { x: "430%" } : { x: "-130%" }}
+          transition={{
+            duration: shouldReduceMotion ? 0 : 2.3,
+            ease: "easeInOut",
+            repeat: shouldReduceMotion ? 0 : Infinity,
+            repeatDelay: shouldReduceMotion ? 0 : 1.0,
+          }}
+        />
+      </div>
+
       <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_60%_20%,rgba(255,255,255,0.30),transparent_55%)]" />
 
       <div className="relative flex flex-col gap-6">
@@ -386,13 +391,13 @@ export function HeaderHero() {
           <div className="flex items-center gap-2">
             {showConnecting ? (
               <Pill tone="blue">
-                <span className="text-xs font-semibold">CONNECTING…</span>
+                <span className="text-xs font-semibold">CONNECTING...</span>
               </Pill>
             ) : (
-              config.twitch.enabled && <LiveBadge />
+              config.twitch.enabled && renderLiveBadge()
             )}
 
-            {/* タイトル表示：配信中＋titleあり */}
+            {/* 繧ｿ繧､繝医Ν陦ｨ遉ｺ・夐・菫｡荳ｭ・逆itle縺ゅｊ */}
             {isLive && liveTitle && (
               <span className="text-xs tracking-[0.35em] text-white/70 truncate max-w-[400px]">
                 {liveTitle}
@@ -417,57 +422,73 @@ export function HeaderHero() {
                   href={c.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="group inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/90 backdrop-blur transition hover:bg-white/10 hover:text-white"
+                  className="lux-card group inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/90 backdrop-blur hover:text-white"
                 >
                   {c.label}
                   <span className="ml-2 text-white/50 transition group-hover:text-white/80">
-                    ↗
+                    &gt;
                   </span>
                 </a>
               ))}
             </div>
           </div>
 
-          {/* プロフィール画像マーキー */}
+          {/* 繝励Ο繝輔ぅ繝ｼ繝ｫ逕ｻ蜒上・繝ｼ繧ｭ繝ｼ */}
           <motion.div
             initial="hidden"
             animate={canAnimate ? "visible" : "hidden"}
             variants={profileImageVariants}
             className="flex items-center justify-center md:justify-end min-h-[256px] w-[256px]"
           >
-            {allImages.length > 0 ? (
-              <div
-                ref={scrollContainerRef}
-                className="w-[256px] h-[256px] overflow-x-auto overflow-y-hidden rounded-xl scrollbar-hide"
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={handleMouseLeave}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                style={{
-                  cursor: shouldReduceMotion || allImages.length === 0 ? "default" : "grab",
-                }}
-              >
+            <motion.div
+              animate={
+                canAnimate && !shouldReduceMotion
+                  ? { scale: [1, 1.01, 1], y: [0, -1, 0] }
+                  : { scale: 1, y: 0 }
+              }
+              transition={
+                canAnimate && !shouldReduceMotion
+                  ? { duration: 5.8, ease: "easeInOut", repeat: Infinity }
+                  : { duration: 0 }
+              }
+            >
+              {allImages.length > 0 ? (
                 <div
-                  className="flex h-full"
+                  ref={scrollContainerRef}
+                  className="w-[256px] h-[256px] overflow-x-auto overflow-y-hidden rounded-xl scrollbar-hide"
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={handleMouseLeave}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
                   style={{
-                    width: `${doubledImages.length * 256}px`,
+                    cursor:
+                      shouldReduceMotion || allImages.length === 0
+                        ? "default"
+                        : "grab",
                   }}
                 >
-                  {doubledImages.map((imgUrl, index) => (
-                    <img
-                      key={`${imgUrl}-${index}`}
-                      src={imgUrl}
-                      alt={`Profile ${index + 1}`}
-                      className="h-[256px] w-[256px] flex-shrink-0 object-cover"
-                      draggable={false}
-                    />
-                  ))}
+                  <div
+                    className="flex h-full"
+                    style={{
+                      width: `${doubledImages.length * 256}px`,
+                    }}
+                  >
+                    {doubledImages.map((imgUrl, index) => (
+                      <img
+                        key={`${imgUrl}-${index}`}
+                        src={imgUrl}
+                        alt={`Profile ${index + 1}`}
+                        className="h-[256px] w-[256px] flex-shrink-0 object-cover"
+                        draggable={false}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="h-64 w-64 rounded-xl bg-white/5" />
-            )}
+              ) : (
+                <div className="h-64 w-64 rounded-xl bg-white/5" />
+              )}
+            </motion.div>
           </motion.div>
         </div>
 
@@ -484,7 +505,7 @@ export function HeaderHero() {
                 animate={canAnimate ? "show" : "hidden"}
                 variants={qrCardVariants}
                 custom={index}
-                className="group flex flex-col items-center rounded-2xl bg-white/5 border border-white/10 p-3 sm:p-4 text-center transition hover:-translate-y-0.5 hover:bg-white/10"
+                className="lux-card group flex flex-col items-center rounded-2xl bg-white/5 border border-white/10 p-3 sm:p-4 text-center"
               >
                 <span className="text-sm text-white/70 mb-2 sm:mb-3 group-hover:text-white/90 transition">
                   {qr.label}
@@ -505,3 +526,5 @@ export function HeaderHero() {
     </motion.section>
   );
 }
+
+

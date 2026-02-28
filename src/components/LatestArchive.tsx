@@ -1,4 +1,4 @@
-// src/components/LatestArchive.tsx
+﻿// src/components/LatestArchive.tsx
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { config } from "@/content/config";
@@ -16,7 +16,7 @@ export function LatestArchive({ visible = true }: LatestArchiveProps) {
   const [canAnimate, setCanAnimate] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
-  // 「ページ表示開始からの経過」を測る
+  // 縲後・繝ｼ繧ｸ陦ｨ遉ｺ髢句ｧ九°繧峨・邨碁℃縲阪ｒ貂ｬ繧・
   const mountedAtRef = useRef<number>(0);
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export function LatestArchive({ visible = true }: LatestArchiveProps) {
 
         const thumbnailMap: Record<string, string> = {};
         fetchedVideos.forEach((video) => {
-          const key = video.url; // 現状のまま（必要ならidキーに変更もOK）
+          const key = video.url; // 迴ｾ迥ｶ縺ｮ縺ｾ縺ｾ・亥ｿ・ｦ√↑繧永d繧ｭ繝ｼ縺ｫ螟画峩繧０K・・
           if (video.thumbnail) {
             thumbnailMap[key] = video.thumbnail.startsWith("http")
               ? `/api/img?url=${encodeURIComponent(video.thumbnail)}`
@@ -76,7 +76,7 @@ export function LatestArchive({ visible = true }: LatestArchiveProps) {
     };
   }, []);
 
-  // 起動演出 + QR終了（合計4.7秒）に合わせる：マウントからの残り時間だけ待つ
+  // 襍ｷ蜍墓ｼ泌・ + QR邨ゆｺ・ｼ亥粋險・.7遘抵ｼ峨↓蜷医ｏ縺帙ｋ・壹・繧ｦ繝ｳ繝医°繧峨・谿九ｊ譎る俣縺縺大ｾ・▽
   useEffect(() => {
     if (loading) return;
 
@@ -94,7 +94,7 @@ export function LatestArchive({ visible = true }: LatestArchiveProps) {
     return () => window.clearTimeout(timer);
   }, [loading, shouldReduceMotion]);
 
-  // ロード中はスケルトン表示（今のままでOK）
+  // 繝ｭ繝ｼ繝我ｸｭ縺ｯ繧ｹ繧ｱ繝ｫ繝医Φ陦ｨ遉ｺ・井ｻ翫・縺ｾ縺ｾ縺ｧOK・・
   if (loading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -132,7 +132,7 @@ export function LatestArchive({ visible = true }: LatestArchiveProps) {
     }),
   };
 
-  // visibleがfalseの場合はinvisibleクラスで非表示（レイアウトは維持）
+  // visible縺掲alse縺ｮ蝣ｴ蜷医・invisible繧ｯ繝ｩ繧ｹ縺ｧ髱櫁｡ｨ遉ｺ・医Ξ繧､繧｢繧ｦ繝医・邯ｭ謖・ｼ・
   const isVisible = visible && canAnimate;
   const shouldHide = !visible || (!canAnimate && !shouldReduceMotion);
 
@@ -151,7 +151,7 @@ export function LatestArchive({ visible = true }: LatestArchiveProps) {
           animate={isVisible ? "visible" : "hidden"}
           variants={cardVariants}
           custom={index}
-          className="group overflow-hidden rounded-xl border border-white/10 bg-white/5 transition hover:bg-white/10"
+          className="lux-card group overflow-hidden rounded-xl border border-white/10 bg-white/5"
         >
           <a href={video.url} target="_blank" rel="noreferrer" className="block">
             <div className="relative">
@@ -168,13 +168,13 @@ export function LatestArchive({ visible = true }: LatestArchiveProps) {
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-70" />
               <div className="pointer-events-none absolute bottom-2 left-2 inline-flex items-center rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-xs text-white/90 backdrop-blur">
-                ▶ Archive
+                Archive
               </div>
             </div>
             <div className="p-4">
               <div className="text-sm font-semibold text-white/90">{video.title}</div>
               <div className="mt-2 text-xs text-white/60">
-                {new Date(video.createdAt).toLocaleDateString()} ·{" "}
+                {new Date(video.createdAt).toLocaleDateString()} •{" "}
                 {video.viewCount.toLocaleString()} views
               </div>
             </div>
@@ -184,3 +184,4 @@ export function LatestArchive({ visible = true }: LatestArchiveProps) {
     </div>
   );
 }
+
