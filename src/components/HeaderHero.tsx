@@ -349,7 +349,7 @@ export function HeaderHero() {
       initial="hidden"
       animate={canAnimate ? "visible" : "hidden"}
       variants={heroVariants}
-      className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur"
+      className="hero-burst hero-rave relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.07] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur"
     >
       {/* 譛ｬ逡ｪ逕ｨ・壻ｸｭ蠢・°繧牙ｺ・′繧狗區縺・・・磯≦蟒ｶ蠕後↓陦ｨ遉ｺ縲∵ｯ主屓・・*/}
       {showHighlight && (
@@ -366,6 +366,40 @@ export function HeaderHero() {
       )}
 
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <motion.div
+          className="absolute -left-24 -top-24 h-64 w-64 rounded-full blur-2xl"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(56,189,248,0.38) 0%, rgba(56,189,248,0) 72%)",
+          }}
+          animate={
+            shouldReduceMotion
+              ? { opacity: 0.65 }
+              : { x: [0, 36, 0], y: [0, 28, 0], opacity: [0.55, 0.8, 0.55] }
+          }
+          transition={
+            shouldReduceMotion
+              ? { duration: 0 }
+              : { duration: 8.4, repeat: Infinity, ease: "easeInOut" }
+          }
+        />
+        <motion.div
+          className="absolute -bottom-24 right-0 h-72 w-72 rounded-full blur-2xl"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(251,146,60,0.40) 0%, rgba(251,146,60,0) 72%)",
+          }}
+          animate={
+            shouldReduceMotion
+              ? { opacity: 0.58 }
+              : { x: [0, -26, 0], y: [0, -34, 0], opacity: [0.45, 0.76, 0.45] }
+          }
+          transition={
+            shouldReduceMotion
+              ? { duration: 0 }
+              : { duration: 9.6, repeat: Infinity, ease: "easeInOut" }
+          }
+        />
         <motion.div
           className="absolute -left-1/3 top-0 h-full w-1/3"
           style={{
@@ -408,22 +442,43 @@ export function HeaderHero() {
 
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 md:items-start">
           <div className="flex flex-col gap-3">
+            <span className="inline-flex w-fit items-center rounded-full border border-cyan-200/30 bg-cyan-300/10 px-3 py-1 text-[10px] font-semibold tracking-[0.32em] text-cyan-100">
+              WELCOME TO THE STREAM HUB
+            </span>
             <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
-              {config.hero.name}
+              <span className="hero-title-glow hero-title-pulse">{config.hero.name}</span>
             </h1>
-            <p className="max-w-2xl text-sm leading-relaxed text-white/80 sm:text-base">
+            <p className="max-w-2xl text-sm leading-relaxed text-white/86 sm:text-base">
               {config.hero.subtitle}
             </p>
+            <div className="inline-flex w-fit items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-white/75">
+              ふらっと立ち寄れる配信ラウンジ
+            </div>
+            <div className="flex flex-wrap items-center gap-2 text-[11px] text-white/65">
+              <span className="hero-note-pill">雑談</span>
+              <span className="hero-note-pill">ゲーム</span>
+              <span className="hero-note-pill">ゆるトーク</span>
+            </div>
 
             <div className="flex flex-wrap gap-3">
-              {ctas.map((c) => (
+              {ctas.map((c, index) => (
                 <a
                   key={c.href}
                   href={c.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="lux-card group inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/90 backdrop-blur hover:text-white"
+                  className={[
+                    "group inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium backdrop-blur transition",
+                    index === 0
+                      ? "cta-primary cta-rave border border-amber-200/45 bg-gradient-to-r from-amber-100/18 via-white/14 to-cyan-100/15 text-white shadow-[0_8px_26px_rgba(251,191,36,0.24)]"
+                      : "lux-card cta-spark cta-rave-sub border border-white/10 bg-white/5 text-white/90 hover:text-white",
+                  ].join(" ")}
                 >
+                  {index === 0 && (
+                    <span className="mr-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-amber-100/90 text-[9px] font-black text-slate-900">
+                      GO
+                    </span>
+                  )}
                   {c.label}
                   <span className="ml-2 text-white/50 transition group-hover:text-white/80">
                     &gt;
@@ -453,36 +508,38 @@ export function HeaderHero() {
               }
             >
               {allImages.length > 0 ? (
-                <div
-                  ref={scrollContainerRef}
-                  className="w-[256px] h-[256px] overflow-x-auto overflow-y-hidden rounded-xl scrollbar-hide"
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={handleMouseLeave}
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                  style={{
-                    cursor:
-                      shouldReduceMotion || allImages.length === 0
-                        ? "default"
-                        : "grab",
-                  }}
-                >
+                <div className="profile-orbit relative rounded-2xl p-[3px]">
                   <div
-                    className="flex h-full"
+                    ref={scrollContainerRef}
+                    className="w-[256px] h-[256px] overflow-x-auto overflow-y-hidden rounded-xl scrollbar-hide"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
                     style={{
-                      width: `${doubledImages.length * 256}px`,
+                      cursor:
+                        shouldReduceMotion || allImages.length === 0
+                          ? "default"
+                          : "grab",
                     }}
                   >
-                    {doubledImages.map((imgUrl, index) => (
-                      <img
-                        key={`${imgUrl}-${index}`}
-                        src={imgUrl}
-                        alt={`Profile ${index + 1}`}
-                        className="h-[256px] w-[256px] flex-shrink-0 object-cover"
-                        draggable={false}
-                      />
-                    ))}
+                    <div
+                      className="flex h-full"
+                      style={{
+                        width: `${doubledImages.length * 256}px`,
+                      }}
+                    >
+                      {doubledImages.map((imgUrl, index) => (
+                        <img
+                          key={`${imgUrl}-${index}`}
+                          src={imgUrl}
+                          alt={`Profile ${index + 1}`}
+                          className="h-[256px] w-[256px] flex-shrink-0 object-cover"
+                          draggable={false}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -505,9 +562,9 @@ export function HeaderHero() {
                 animate={canAnimate ? "show" : "hidden"}
                 variants={qrCardVariants}
                 custom={index}
-                className="lux-card group flex flex-col items-center rounded-2xl bg-white/5 border border-white/10 p-3 sm:p-4 text-center"
+                className="lux-card group flex flex-col items-center rounded-2xl border border-white/10 bg-white/[0.06] p-3 text-center sm:p-4"
               >
-                <span className="text-sm text-white/70 mb-2 sm:mb-3 group-hover:text-white/90 transition">
+                <span className="mb-2 text-sm font-medium text-white/72 transition group-hover:text-white/90 sm:mb-3">
                   {qr.label}
                 </span>
                 <div className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 flex items-center justify-center">

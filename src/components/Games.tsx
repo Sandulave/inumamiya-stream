@@ -40,39 +40,54 @@ export function Games({ visible = true }: GamesProps) {
       aria-hidden={shouldHide}
     >
       {config.games.map((game, index) => (
-        <motion.a
+        <motion.article
           key={game.href}
-          href={game.href}
-          target="_blank"
-          rel="noreferrer"
           initial="hidden"
           animate={isVisible ? "visible" : "hidden"}
           variants={cardVariants}
           custom={index}
-          className="lux-card group rounded-xl border border-white/10 bg-white/5 p-4"
+          // DOM rule aligned with ARCHIVE/CLIPS:
+          // outer card frame + inner link + media/body split.
+          className="lux-card game-card group overflow-hidden rounded-xl border border-white/10 bg-white/5"
         >
-          {game.thumbnail && (
-            <div className="mb-3 overflow-hidden rounded-lg border border-white/10 bg-black/20">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`/api/img?url=${encodeURIComponent(game.thumbnail)}`}
-                alt={game.title}
-                className="aspect-video w-full object-cover transition duration-500 group-hover:scale-[1.035] group-hover:-translate-y-0.5"
-                loading="lazy"
-              />
+          <a href={game.href} target="_blank" rel="noreferrer" className="block">
+            {game.thumbnail && (
+              <div className="card-media relative overflow-hidden border-b border-white/10 bg-black/25">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`/api/img?url=${encodeURIComponent(game.thumbnail)}`}
+                  alt={game.title}
+                  className="aspect-video w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                  loading="lazy"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-black/0 opacity-70" />
+                <span className="card-chip pointer-events-none absolute left-2 top-2">
+                  GAME
+                </span>
+              </div>
+            )}
+
+            <div className="card-body p-4">
+              <div className="card-kicker mb-2 inline-flex items-center rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold tracking-[0.12em] text-white/62">
+                {index === 0 ? "PICK UP" : "PLAY READY"}
+              </div>
+              <div className="card-title text-sm font-semibold text-white/95">
+                {game.title}
+              </div>
+              {game.subtitle && (
+                <div className="card-meta mt-2 text-xs text-white/68">
+                  {game.subtitle}
+                </div>
+              )}
+              <div className="card-action game-action mt-4 inline-flex items-center text-xs font-medium text-white/78">
+                プレイする
+                <span className="ml-2 opacity-70 transition group-hover:opacity-100">
+                  &gt;
+                </span>
+              </div>
             </div>
-          )}
-          <div className="text-sm font-semibold text-white/95">{game.title}</div>
-          {game.subtitle && (
-            <div className="mt-2 text-xs text-white/70">{game.subtitle}</div>
-          )}
-          <div className="mt-4 inline-flex items-center text-xs text-white/75">
-            プレイする
-            <span className="ml-2 opacity-70 transition group-hover:opacity-100">
-              &gt;
-            </span>
-          </div>
-        </motion.a>
+          </a>
+        </motion.article>
       ))}
     </div>
   );

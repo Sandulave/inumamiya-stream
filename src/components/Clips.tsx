@@ -96,6 +96,14 @@ export function Clips({ visible = true }: ClipsProps) {
   }, [shouldReduceMotion]);
 
   const canAnimate = shouldReduceMotion || animationReady;
+  const toClipMeta = (href: string) => {
+    try {
+      const u = new URL(href);
+      return `${u.hostname.replace("www.", "")} · ${u.pathname.slice(0, 20)}${u.pathname.length > 20 ? "..." : ""}`;
+    } catch {
+      return href.replace("https://", "").slice(0, 28);
+    }
+  };
 
   if (loading) {
     return (
@@ -147,54 +155,57 @@ export function Clips({ visible = true }: ClipsProps) {
       aria-hidden={shouldHide}
     >
       {clips.map((c, index) => (
-        <motion.a
+        <motion.article
           key={c.href}
-          href={c.href}
-          target="_blank"
-          rel="noreferrer"
           initial="hidden"
           animate={isVisible ? "visible" : "hidden"}
           variants={cardVariants}
           custom={index}
-          className="lux-card group overflow-hidden rounded-xl border border-white/10 bg-white/5"
+          // Keep the same wrapper responsibility as GAMES/ARCHIVE.
+          className="lux-card clip-card group overflow-hidden rounded-xl border border-white/10 bg-white/5"
         >
-          <div className="relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={thumbs[c.href] ?? c.thumbnail ?? "/ogp.png"}
-              alt={c.title}
-              className="h-auto w-full aspect-video object-cover"
-              loading="lazy"
-              onError={(e) => {
-                const img = e.currentTarget as HTMLImageElement;
-                console.error(`[Clips] Image load error for ${c.href}:`, img.src);
-                if (img.src !== "/ogp.png") {
-                  img.src = "/ogp.png";
-                }
-              }}
-              onLoad={() => {
-                console.log(`[Clips] Image loaded successfully for ${c.href}:`, thumbs[c.href] ?? c.thumbnail);
-              }}
-            />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-70" />
-            <div className="pointer-events-none absolute bottom-2 left-2 inline-flex items-center rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-xs text-white/90 backdrop-blur">
-              Clip
+          <a href={c.href} target="_blank" rel="noreferrer" className="block h-full">
+            <div className="card-media relative overflow-hidden border-b border-white/10">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={thumbs[c.href] ?? c.thumbnail ?? "/ogp.png"}
+                alt={c.title}
+                className="h-auto w-full aspect-video object-cover transition duration-500 group-hover:scale-[1.03]"
+                loading="lazy"
+                onError={(e) => {
+                  const img = e.currentTarget as HTMLImageElement;
+                  console.error(`[Clips] Image load error for ${c.href}:`, img.src);
+                  if (img.src !== "/ogp.png") {
+                    img.src = "/ogp.png";
+                  }
+                }}
+                onLoad={() => {
+                  console.log(`[Clips] Image loaded successfully for ${c.href}:`, thumbs[c.href] ?? c.thumbnail);
+                }}
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-70" />
+              <div className="card-chip pointer-events-none absolute bottom-2 left-2">
+                Clip
+              </div>
             </div>
-          </div>
 
-          <div className="p-4">
-            <div className="text-sm font-semibold text-white/90">{c.title}</div>
-            <div className="mt-2 text-xs text-white/60">
-              {c.href.replace("https://", "")}
+            <div className="card-body p-4">
+              <div className="card-kicker mb-2 inline-flex items-center rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold tracking-[0.12em] text-white/62">
+                RECOMMENDED MOMENT
+              </div>
+              <div className="card-title text-sm font-semibold text-white/92">{c.title}</div>
+              <div className="card-meta mt-2 text-xs text-white/62">
+                {toClipMeta(c.href)}
+              </div>
+              <div className="card-action clip-action mt-3 inline-flex items-center rounded-full border border-amber-100/20 bg-amber-100/10 px-2.5 py-1 text-xs font-semibold text-amber-50/90">
+                Open
+                <span className="ml-2 opacity-60 transition group-hover:opacity-100">
+                  &gt;
+                </span>
+              </div>
             </div>
-            <div className="mt-3 inline-flex items-center text-xs text-white/70">
-              Open{" "}
-              <span className="ml-2 opacity-60 transition group-hover:opacity-100">
-                &gt;
-              </span>
-            </div>
-          </div>
-        </motion.a>
+          </a>
+        </motion.article>
       ))}
     </div>
   );

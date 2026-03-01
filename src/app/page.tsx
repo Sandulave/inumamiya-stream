@@ -105,7 +105,7 @@ export default function Page() {
   });
 
   return (
-    <main className="min-h-screen text-white">
+    <main className="rave-max min-h-screen bg-[#020617] text-white">
       <BirthdayCelebrate
         birthday={{ month: config.birthday.month, day: config.birthday.day }}
         onComplete={() => setShowContent(true)}
@@ -128,18 +128,22 @@ export default function Page() {
           className="pointer-events-none fixed inset-0"
           style={{
             opacity: showContent ? 1 : 0,
-            transition: "opacity 1400ms ease-out",
-            mixBlendMode: "soft-light",
-            filter: "blur(8px)",
+            transition: "opacity 900ms ease-out",
+            mixBlendMode: "screen",
+            filter: "blur(4px)",
             background:
-              "radial-gradient(360px circle at var(--px,50%) var(--py,8%), rgba(255,246,218,0.20) 0%, rgba(255,235,194,0.08) 42%, rgba(255,224,163,0) 78%), radial-gradient(980px circle at var(--px,50%) var(--py,8%), rgba(255,224,163,0.10) 0%, rgba(255,224,163,0) 82%), radial-gradient(circle at 50% 8%, rgba(255,224,163,0.08), transparent 58%)",
+              "radial-gradient(420px circle at var(--px,50%) var(--py,8%), rgba(255,250,230,0.42) 0%, rgba(255,235,194,0.18) 44%, rgba(255,224,163,0) 80%), radial-gradient(1180px circle at var(--px,50%) var(--py,8%), rgba(255,224,163,0.22) 0%, rgba(255,224,163,0.06) 48%, rgba(255,224,163,0) 86%), radial-gradient(circle at 50% 8%, rgba(255,224,163,0.12), transparent 60%)",
           }}
         />
 
-        <div className="relative mx-auto max-w-5xl px-5 pb-20 pt-8">
+        <div className="pachinko-shell pachinko-content relative mx-auto max-w-5xl px-5 pb-20 pt-8">
+          <div className="light-rail light-rail-top" aria-hidden />
+          <div className="light-rail light-rail-bottom" aria-hidden />
           <AccessGate>
-            <HeaderHero />
-            {config.ticker.enabled && <Ticker />}
+            <div className="jackpot-rail">
+              <HeaderHero />
+              {config.ticker.enabled && <Ticker />}
+            </div>
 
             <div className="mt-8 space-y-10">
               {config.sections.games.enabled && (

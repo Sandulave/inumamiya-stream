@@ -12,9 +12,9 @@ export function Ticker() {
   } as CSSProperties & Record<`--${string}`, string>;
 
   return (
-    <div className="mt-5 overflow-hidden rounded-xl border border-white/10 bg-white/5">
+    <div className="mt-5 overflow-hidden rounded-xl border border-white/10 bg-white/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
       <div
-        className="ticker flex w-max items-center gap-8 px-4 py-2 text-xs tracking-wide text-white/85"
+        className="ticker flex w-max items-center gap-8 px-4 py-2.5 text-xs tracking-wide text-white/85"
         style={tickerStyle}
       >
         {[...items, ...items].map((t, i) => {
