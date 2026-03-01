@@ -588,7 +588,7 @@ canvas[style*="position: fixed"] {
 .hero-rave::after {
   content: "";
   position: absolute;
-  inset: -40% -30%;
+  inset: -68% -56%;
   background: repeating-conic-gradient(
     from 0deg,
     rgba(255,255,255,0) 0deg 14deg,
@@ -598,6 +598,12 @@ canvas[style*="position: fixed"] {
   opacity: 0.4;
   animation: profile-orbit-spin 10s linear infinite;
   pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .hero-rave::after {
+    inset: -86% -74%;
+  }
 }
 
 .hero-title-pulse {
