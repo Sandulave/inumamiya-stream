@@ -20,6 +20,7 @@ const HIGHLIGHT_MS = 380;
 export function HeaderHero() {
   const ctas: readonly CTA[] = config.hero.ctas;
   const shouldReduceMotion = useReducedMotion();
+  const profileSize = "clamp(200px, 62vw, 256px)";
 
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const [twitchStatus, setTwitchStatus] = useState<TwitchStatus>({
@@ -349,7 +350,7 @@ export function HeaderHero() {
       initial="hidden"
       animate={canAnimate ? "visible" : "hidden"}
       variants={heroVariants}
-      className="hero-burst hero-rave relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.07] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur"
+      className="hero-burst hero-rave relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.07] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur sm:p-6"
     >
       {/* 譛ｬ逡ｪ逕ｨ・壻ｸｭ蠢・°繧牙ｺ・′繧狗區縺・・・磯≦蟒ｶ蠕後↓陦ｨ遉ｺ縲∵ｯ主屓・・*/}
       {showHighlight && (
@@ -422,7 +423,7 @@ export function HeaderHero() {
 
       <div className="relative flex flex-col gap-6">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {showConnecting ? (
               <Pill tone="blue">
                 <span className="text-xs font-semibold">CONNECTING...</span>
@@ -433,7 +434,7 @@ export function HeaderHero() {
 
             {/* 繧ｿ繧､繝医Ν陦ｨ遉ｺ・夐・菫｡荳ｭ・逆itle縺ゅｊ */}
             {isLive && liveTitle && (
-              <span className="text-xs tracking-[0.35em] text-white/70 truncate max-w-[400px]">
+              <span className="max-w-full truncate text-[10px] tracking-[0.16em] text-white/70 sm:max-w-[400px] sm:text-xs sm:tracking-[0.35em]">
                 {liveTitle}
               </span>
             )}
@@ -442,10 +443,10 @@ export function HeaderHero() {
 
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 md:items-start">
           <div className="flex flex-col gap-3">
-            <span className="inline-flex w-fit items-center rounded-full border border-cyan-200/30 bg-cyan-300/10 px-3 py-1 text-[10px] font-semibold tracking-[0.32em] text-cyan-100">
+            <span className="inline-flex w-fit items-center rounded-full border border-cyan-200/30 bg-cyan-300/10 px-3 py-1 text-[10px] font-semibold tracking-[0.2em] text-cyan-100 sm:tracking-[0.32em]">
               WELCOME TO THE STREAM HUB
             </span>
-            <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
+            <h1 className="text-3xl font-black tracking-tight sm:text-4xl md:text-5xl">
               <span className="hero-title-glow hero-title-pulse">{config.hero.name}</span>
             </h1>
             <p className="max-w-2xl text-sm leading-relaxed text-white/86 sm:text-base">
@@ -493,7 +494,8 @@ export function HeaderHero() {
             initial="hidden"
             animate={canAnimate ? "visible" : "hidden"}
             variants={profileImageVariants}
-            className="flex items-center justify-center md:justify-end min-h-[256px] w-[256px]"
+            className="flex items-center justify-center md:justify-end"
+            style={{ width: profileSize, minHeight: profileSize }}
           >
             <motion.div
               animate={
@@ -511,13 +513,15 @@ export function HeaderHero() {
                 <div className="profile-orbit relative rounded-2xl p-[3px]">
                   <div
                     ref={scrollContainerRef}
-                    className="w-[256px] h-[256px] overflow-x-auto overflow-y-hidden rounded-xl scrollbar-hide"
+                    className="overflow-x-auto overflow-y-hidden rounded-xl scrollbar-hide"
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={handleMouseLeave}
                     onMouseDown={handleMouseDown}
                     onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}
                     style={{
+                      width: profileSize,
+                      height: profileSize,
                       cursor:
                         shouldReduceMotion || allImages.length === 0
                           ? "default"
@@ -527,7 +531,7 @@ export function HeaderHero() {
                     <div
                       className="flex h-full"
                       style={{
-                        width: `${doubledImages.length * 256}px`,
+                        width: `calc(${doubledImages.length} * ${profileSize})`,
                       }}
                     >
                       {doubledImages.map((imgUrl, index) => (
@@ -535,7 +539,8 @@ export function HeaderHero() {
                           key={`${imgUrl}-${index}`}
                           src={imgUrl}
                           alt={`Profile ${index + 1}`}
-                          className="h-[256px] w-[256px] flex-shrink-0 object-cover"
+                          className="flex-shrink-0 object-cover"
+                          style={{ width: profileSize, height: profileSize }}
                           draggable={false}
                         />
                       ))}
@@ -543,7 +548,7 @@ export function HeaderHero() {
                   </div>
                 </div>
               ) : (
-                <div className="h-64 w-64 rounded-xl bg-white/5" />
+                <div className="rounded-xl bg-white/5" style={{ width: profileSize, height: profileSize }} />
               )}
             </motion.div>
           </motion.div>

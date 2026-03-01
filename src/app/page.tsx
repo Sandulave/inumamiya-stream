@@ -136,7 +136,7 @@ export default function Page() {
           }}
         />
 
-        <div className="pachinko-shell pachinko-content relative mx-auto max-w-5xl px-5 pb-20 pt-8">
+        <div className="pachinko-shell pachinko-content relative mx-auto max-w-5xl px-4 pb-16 pt-6 sm:px-5 sm:pb-20 sm:pt-8">
           <div className="light-rail light-rail-top" aria-hidden />
           <div className="light-rail light-rail-bottom" aria-hidden />
           <AccessGate>
