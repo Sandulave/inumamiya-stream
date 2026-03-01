@@ -224,13 +224,16 @@ export function BirthdayCelebrate({ birthday, onComplete }: Props) {
         }
         .bi-slots {
           position: fixed;
-          top: clamp(14px, 4vh, 44px);
+          top: clamp(56px, 16vh, 180px);
           left: 50%;
           transform: translateX(-50%);
           display: flex;
           align-items: center;
+          justify-content: center;
+          flex-wrap: wrap;
           gap: clamp(14px, 2.8vw, 42px);
           padding: 10px 22px;
+          max-width: min(94vw, 760px);
           border: 1px solid rgba(255,255,255,0.26);
           border-radius: 999px;
           background: rgba(3, 7, 18, 0.52);
@@ -241,6 +244,9 @@ export function BirthdayCelebrate({ birthday, onComplete }: Props) {
           color: #f8fafc;
           text-shadow: 0 0 18px rgba(14,165,233,0.7);
           animation: bi-slots-pulse 780ms steps(2, jump-none) infinite;
+        }
+        .bi-slots span {
+          white-space: nowrap;
         }
         .bi-center {
           position: relative;
@@ -326,10 +332,11 @@ export function BirthdayCelebrate({ birthday, onComplete }: Props) {
         }
         @media (max-width: 640px) {
           .bi-slots {
-            top: clamp(10px, 3vh, 18px);
+            top: clamp(44px, 14vh, 120px);
             gap: 12px;
             letter-spacing: 0.06em;
             padding: 8px 14px;
+            font-size: clamp(18px, 8vw, 28px);
           }
           .bi-center {
             width: min(94vw, 700px);
@@ -346,6 +353,14 @@ export function BirthdayCelebrate({ birthday, onComplete }: Props) {
           .bi-ring-b {
             width: min(58vw, 340px);
             height: min(58vw, 340px);
+          }
+        }
+        @media (max-width: 360px) {
+          .bi-slots {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2px;
+            text-align: center;
           }
         }
         @media (prefers-reduced-motion: reduce) {
