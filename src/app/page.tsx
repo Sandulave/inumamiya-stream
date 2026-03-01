@@ -129,10 +129,10 @@ export default function Page() {
           style={{
             opacity: showContent ? 1 : 0,
             transition: "opacity 900ms ease-out",
-            mixBlendMode: "screen",
-            filter: "blur(4px)",
+            mixBlendMode: "soft-light",
+            filter: "blur(4.8px)",
             background:
-              "radial-gradient(420px circle at var(--px,50%) var(--py,8%), rgba(255,250,230,0.42) 0%, rgba(255,235,194,0.18) 44%, rgba(255,224,163,0) 80%), radial-gradient(1180px circle at var(--px,50%) var(--py,8%), rgba(255,224,163,0.22) 0%, rgba(255,224,163,0.06) 48%, rgba(255,224,163,0) 86%), radial-gradient(circle at 50% 8%, rgba(255,224,163,0.12), transparent 60%)",
+              "radial-gradient(400px circle at var(--px,50%) var(--py,8%), rgba(255,250,230,0.31) 0%, rgba(255,235,194,0.125) 42%, rgba(255,224,163,0) 78%), radial-gradient(1080px circle at var(--px,50%) var(--py,8%), rgba(255,224,163,0.145) 0%, rgba(255,224,163,0.042) 48%, rgba(255,224,163,0) 86%), radial-gradient(circle at 50% 8%, rgba(255,224,163,0.082), transparent 60%)",
           }}
         />
 
