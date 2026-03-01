@@ -181,8 +181,8 @@ export function BirthdayCelebrate({ birthday, onComplete }: Props) {
           position: absolute;
           left: 50%;
           top: 50%;
-          width: 220vmax;
-          height: 220vmax;
+          width: 300vmax;
+          height: 300vmax;
           transform: translate(-50%, -50%);
           background:
             repeating-conic-gradient(
@@ -331,6 +331,11 @@ export function BirthdayCelebrate({ birthday, onComplete }: Props) {
           50% { opacity: 0.74; filter: brightness(1.3); }
         }
         @media (max-width: 640px) {
+          .bi-flash {
+            width: 380vmax;
+            height: 380vmax;
+            filter: blur(2px);
+          }
           .bi-slots {
             top: clamp(44px, 14vh, 120px);
             gap: 12px;
