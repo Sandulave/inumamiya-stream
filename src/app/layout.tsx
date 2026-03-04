@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
+import { config } from "@/content/config";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,32 +14,43 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://inumamiya-stream.vercel.app";
+const ogImagePath = "/ogp.png";
+
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://inumamiya-stream.vercel.app"
-  ),
-  title: "INUMAMIYA",
-  description: "配信者・いぬまみやさんの活動を紹介する非公式ページ",
+  metadataBase: new URL(siteUrl),
+  title: config.site.title,
+  description: config.site.description,
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "INUMAMIYA | STREAM NEWSROOM",
-    description: "落ち着いた雑談と時事ネタ配信",
-    url: "https://inumamiya-stream.vercel.app/",
+    title: config.site.title,
+    description: config.site.description,
+    url: "/",
+    type: "website",
     siteName: "INUMAMIYA STREAM",
+    locale: "ja_JP",
     images: [
       {
-        url: "/ogp.png",
+        url: ogImagePath,
         width: 1200,
         height: 630,
+        alt: config.site.title,
       },
     ],
-    locale: "ja_JP",
-    type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "いぬまみや",
-    description: "超おもろ配信",
-    images: ["/ogp.png"],
+    title: config.site.title,
+    description: config.site.description,
+    images: [
+      {
+        url: ogImagePath,
+        alt: config.site.title,
+      },
+    ],
   },
 };
 
