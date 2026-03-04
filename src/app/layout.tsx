@@ -16,7 +16,8 @@ const geistMono = Geist_Mono({
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://inumamiya-stream.vercel.app";
-const ogImagePath = "/ogp.png";
+const ogImageVersion = process.env.NEXT_PUBLIC_OG_IMAGE_VERSION ?? "1";
+const ogImagePath = `/ogp.png?v=${ogImageVersion}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
